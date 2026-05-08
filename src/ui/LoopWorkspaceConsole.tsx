@@ -12,7 +12,7 @@ import { submitQuickFeedback, processScreenshotFeedback } from '../core/feedback
 import { ALL_LOOP_CONFIGS } from '../core/loopConfigs';
 import { useMediaQuery } from '../hooks/useMediaQuery';
 import { useI18n, getOutputLanguageInstruction } from '../i18n';
-import { RUNTIME_CONNECTORS, type RuntimeStatus } from '../adapters/runtime';
+import type { RuntimeConnector, RuntimeStatus } from '../adapters/runtime';
 import LoopProgressSidebar from './LoopProgressSidebar';
 import LoopWorkspaceMain from './LoopWorkspaceMain';
 import LoopFeedbackPanel from './LoopFeedbackPanel';
@@ -26,7 +26,7 @@ function noop(_bubble: SpiritBubblePayload) {
   console.log('[Loop Bubble]', _bubble.text);
 }
 
-function RuntimeCard({ status }: { status: RuntimeStatus }) {
+function RuntimeCard({ status }: { status: RuntimeStatus & { connectors?: RuntimeConnector[] } }) {
   const { t } = useI18n();
 
   return (
@@ -60,13 +60,13 @@ function RuntimeCard({ status }: { status: RuntimeStatus }) {
           <PlugZap size={13} /> {t('runtime.adapters')}
         </p>
         <div className="flex flex-wrap gap-1.5">
-          {RUNTIME_CONNECTORS.map((connector) => (
+          {(status.connectors ?? []).map((connector) => (
             <span key={connector.id} className={`rounded-full px-2 py-0.5 text-[11px] ${
-              connector.status === 'available'
+              connector.available
                 ? 'bg-sage-green/10 text-sage-green'
                 : 'bg-warm-sand/60 text-olive-gray'
             }`}>
-              {connector.label}{connector.status === 'planned' ? ` · ${t('runtime.planned')}` : ''}
+              {connector.label}{!connector.available ? ` · ${t('runtime.planned')}` : ''}
             </span>
           ))}
         </div>

@@ -11,6 +11,7 @@ import { useLoopStore } from '../core/loopStore';
 import { advanceLoop } from '../core/loopEngine';
 import { submitQuickFeedback } from '../core/feedbackCollector';
 import type { CentaurLoopConfig, LoopCycle, SpiritBubblePayload } from '../core/types';
+import { getLoopConfigDescription, getLoopConfigLabel, getOutputLanguageInstruction, type Locale } from '../i18n';
 import type {
   LoopChatSession,
   LoopMessage,
@@ -89,19 +90,25 @@ export function parseUserIntent(text: string, currentStage: string): UserAction 
 
 // ─── 阶段 → 消息翻译器 ──────────────────────────────────────
 
-function buildPlanMessage(cycle: LoopCycle, config: CentaurLoopConfig): LoopMessage[] {
+function buildPlanMessage(cycle: LoopCycle, config: CentaurLoopConfig, locale: Locale): LoopMessage[] {
   const plan = cycle.plan;
-  if (!plan) return [aiMsg('规划完成，但未生成计划详情。')];
+  if (!plan) return [aiMsg(locale === 'zh-CN' ? '规划完成，但未生成计划详情。' : 'Planning finished, but no plan details were generated.')];
 
   const taskList = cycle.tasks.map((t, i) => `${i + 1}. ${t.appName}`).join('\n');
-  const keywordStr = plan.keywords?.length ? `\n关键词：${plan.keywords.join('、')}` : '';
-  const platformStr = plan.platforms.length ? `\n平台：${plan.platforms.join('、')}` : '';
+  const keywordStr = plan.keywords?.length
+    ? locale === 'zh-CN' ? `\n关键词：${plan.keywords.join('、')}` : `\nKeywords: ${plan.keywords.join(', ')}`
+    : '';
+  const platformStr = plan.platforms.length
+    ? locale === 'zh-CN' ? `\n平台：${plan.platforms.join('、')}` : `\nPlatforms: ${plan.platforms.join(', ')}`
+    : '';
 
-  const text = `📋 ${config.cyclePeriod === 'daily' ? '今日' : '本周'}计划已出：\n\n${plan.summary}${platformStr}${keywordStr}\n\n${taskList}\n\n确认这个计划吗？或者告诉我要怎么调整。`;
+  const text = locale === 'zh-CN'
+    ? `📋 ${config.cyclePeriod === 'daily' ? '今日' : '本周'}计划已出：\n\n${plan.summary}${platformStr}${keywordStr}\n\n${taskList}\n\n确认这个计划吗？或者告诉我要怎么调整。`
+    : `📋 The ${config.cyclePeriod === 'daily' ? 'daily' : 'weekly'} plan is ready:\n\n${plan.summary}${platformStr}${keywordStr}\n\n${taskList}\n\nApprove this plan, or tell me what to change.`;
 
   const actions: QuickAction[] = [
-    { id: 'confirm', label: '确认，开始生成', variant: 'primary', action: { type: 'confirm' } },
-    { id: 'skip', label: '跳过本轮', variant: 'ghost', action: { type: 'skip' } },
+    { id: 'confirm', label: locale === 'zh-CN' ? '确认，开始生成' : 'Approve and generate', variant: 'primary', action: { type: 'confirm' } },
+    { id: 'skip', label: locale === 'zh-CN' ? '跳过本轮' : 'Skip cycle', variant: 'ghost', action: { type: 'skip' } },
   ];
 
   return [aiMsg(text, 'plan_card', {
@@ -116,16 +123,18 @@ function buildPlanMessage(cycle: LoopCycle, config: CentaurLoopConfig): LoopMess
   })];
 }
 
-function buildDraftMessages(cycle: LoopCycle): LoopMessage[] {
+function buildDraftMessages(cycle: LoopCycle, locale: Locale): LoopMessage[] {
   const messages: LoopMessage[] = [];
 
-  messages.push(aiMsg(`✍️ ${cycle.tasks.length} 篇内容已生成，逐篇给你看：`));
+  messages.push(aiMsg(locale === 'zh-CN'
+    ? `✍️ ${cycle.tasks.length} 篇内容已生成，逐篇给你看：`
+    : `✍️ ${cycle.tasks.length} draft(s) are ready for review.`));
 
   for (const task of cycle.tasks) {
     if (!task.draft) continue;
     const actions: QuickAction[] = [
-      { id: `approve-${task.id}`, label: '通过', variant: 'primary', action: { type: 'confirm', payload: { taskId: task.id } } },
-      { id: `reject-${task.id}`, label: '修改意见', variant: 'ghost', action: { type: 'reject', payload: { taskId: task.id } } },
+      { id: `approve-${task.id}`, label: locale === 'zh-CN' ? '通过' : 'Approve', variant: 'primary', action: { type: 'confirm', payload: { taskId: task.id } } },
+      { id: `reject-${task.id}`, label: locale === 'zh-CN' ? '修改意见' : 'Change request', variant: 'ghost', action: { type: 'reject', payload: { taskId: task.id } } },
     ];
 
     messages.push(aiMsg(
@@ -145,26 +154,28 @@ function buildDraftMessages(cycle: LoopCycle): LoopMessage[] {
     ));
   }
 
-  messages.push(aiMsg('全部看完了，可以逐篇确认，也可以说"全部通过"。', 'quick_actions', {
+  messages.push(aiMsg(locale === 'zh-CN' ? '全部看完了，可以逐篇确认，也可以说"全部通过"。' : 'You can approve drafts one by one, or approve all of them.', 'quick_actions', {
     actions: [
-      { id: 'approve-all', label: '全部通过', variant: 'primary', action: { type: 'approve_all' } },
+      { id: 'approve-all', label: locale === 'zh-CN' ? '全部通过' : 'Approve all', variant: 'primary', action: { type: 'approve_all' } },
     ],
   }));
 
   return messages;
 }
 
-function buildPublishMessage(cycle: LoopCycle): LoopMessage[] {
+function buildPublishMessage(cycle: LoopCycle, locale: Locale): LoopMessage[] {
   const confirmed = cycle.tasks.filter((t) => t.status === 'confirmed');
   const messages: LoopMessage[] = [];
 
   messages.push(aiMsg(
-    `📤 ${confirmed.length} 篇内容已确认，请复制到目标平台发布。发完了告诉我一声。`,
+    locale === 'zh-CN'
+      ? `📤 ${confirmed.length} 篇内容已确认，请复制到目标平台发布。发完了告诉我一声。`
+      : `📤 ${confirmed.length} item(s) are approved. Publish them to the target channel, then tell me when they are live.`,
     'publish_card',
     {
       actions: [
-        { id: 'published-all', label: '已全部发布', variant: 'primary', action: { type: 'mark_published' } },
-        { id: 'skip-publish', label: '稍后发布', variant: 'ghost', action: { type: 'skip' } },
+        { id: 'published-all', label: locale === 'zh-CN' ? '已全部发布' : 'Mark all published', variant: 'primary', action: { type: 'mark_published' } },
+        { id: 'skip-publish', label: locale === 'zh-CN' ? '稍后发布' : 'Later', variant: 'ghost', action: { type: 'skip' } },
       ],
       cycleId: cycle.id,
     },
@@ -173,28 +184,32 @@ function buildPublishMessage(cycle: LoopCycle): LoopMessage[] {
   return messages;
 }
 
-function buildFeedbackRequest(cycle: LoopCycle, config: CentaurLoopConfig): LoopMessage[] {
-  const text = config.cyclePeriod === 'daily'
-    ? '📊 视频发了多久了？有数据了的话告诉我播放量、点赞这些。也可以直接截图给我。'
-    : '📊 内容发布后表现怎么样？可以直接说数据（比如"公众号800阅读56赞"），或者截个图。';
+function buildFeedbackRequest(cycle: LoopCycle, config: CentaurLoopConfig, locale: Locale): LoopMessage[] {
+  const text = locale === 'zh-CN'
+    ? config.cyclePeriod === 'daily'
+      ? '📊 视频发了多久了？有数据了的话告诉我播放量、点赞这些。也可以直接截图给我。'
+      : '📊 内容发布后表现怎么样？可以直接说数据（比如"公众号800阅读56赞"），或者截个图。'
+    : '📊 How did it perform after publishing? Send metrics like "1200 views 68 likes", or paste the result manually.';
 
   return [aiMsg(text, 'feedback_request', {
     actions: [
-      { id: 'skip-feedback', label: '跳过，直接复盘', variant: 'ghost', action: { type: 'skip' } },
+      { id: 'skip-feedback', label: locale === 'zh-CN' ? '跳过，直接复盘' : 'Skip and review', variant: 'ghost', action: { type: 'skip' } },
     ],
     cycleId: cycle.id,
   })];
 }
 
-function buildReviewMessage(cycle: LoopCycle): LoopMessage[] {
+function buildReviewMessage(cycle: LoopCycle, locale: Locale): LoopMessage[] {
   const review = cycle.review;
-  if (!review) return [aiMsg('复盘完成。')];
+  if (!review) return [aiMsg(locale === 'zh-CN' ? '复盘完成。' : 'Review complete.')];
 
   const effective = review.effectivePoints.map((p) => `  ✅ ${p}`).join('\n');
   const ineffective = review.ineffectivePoints.map((p) => `  ⚠️ ${p}`).join('\n');
   const data = review.dataHighlights.map((d) => `  📈 ${d}`).join('\n');
 
-  const text = `📋 **本轮复盘**\n\n${review.summary}\n\n${effective ? `有效：\n${effective}\n\n` : ''}${ineffective ? `待改进：\n${ineffective}\n\n` : ''}${data ? `数据：\n${data}` : ''}`;
+  const text = locale === 'zh-CN'
+    ? `📋 **本轮复盘**\n\n${review.summary}\n\n${effective ? `有效：\n${effective}\n\n` : ''}${ineffective ? `待改进：\n${ineffective}\n\n` : ''}${data ? `数据：\n${data}` : ''}`
+    : `📋 **Cycle review**\n\n${review.summary}\n\n${effective ? `What worked:\n${effective}\n\n` : ''}${ineffective ? `Needs improvement:\n${ineffective}\n\n` : ''}${data ? `Data:\n${data}` : ''}`;
 
   const messages: LoopMessage[] = [
     aiMsg(text, 'review_card', {
@@ -216,15 +231,17 @@ function buildReviewMessage(cycle: LoopCycle): LoopMessage[] {
       .join('\n');
 
     messages.push(aiMsg(
-      `从这轮复盘中提炼了几条经验：\n\n${memList}\n\n要记住这些吗？`,
+      locale === 'zh-CN'
+        ? `从这轮复盘中提炼了几条经验：\n\n${memList}\n\n要记住这些吗？`
+        : `I extracted a few memory candidates from this cycle:\n\n${memList}\n\nShould these become long-term memory?`,
       'memory_card',
       {
         memories: cycle.memoryCandidates
           .filter((m) => m.status === 'pending')
           .map((m) => ({ id: m.id, content: m.content, category: m.category })),
         actions: [
-          { id: 'confirm-all-mem', label: '全部记住', variant: 'primary', action: { type: 'confirm' } },
-          { id: 'skip-mem', label: '不用了', variant: 'ghost', action: { type: 'skip' } },
+          { id: 'confirm-all-mem', label: locale === 'zh-CN' ? '全部记住' : 'Save all', variant: 'primary', action: { type: 'confirm' } },
+          { id: 'skip-mem', label: locale === 'zh-CN' ? '不用了' : 'Do not save', variant: 'ghost', action: { type: 'skip' } },
         ],
         cycleId: cycle.id,
       },
@@ -234,17 +251,19 @@ function buildReviewMessage(cycle: LoopCycle): LoopMessage[] {
   return messages;
 }
 
-function buildCompleteMessage(cycle: LoopCycle, config: CentaurLoopConfig): LoopMessage[] {
+function buildCompleteMessage(cycle: LoopCycle, config: CentaurLoopConfig, locale: Locale): LoopMessage[] {
   const suggestion = cycle.nextSuggestion
-    ? `\n\n💡 下一轮建议：${cycle.nextSuggestion}`
+    ? locale === 'zh-CN' ? `\n\n💡 下一轮建议：${cycle.nextSuggestion}` : `\n\n💡 Next-cycle suggestion: ${cycle.nextSuggestion}`
     : '';
 
   return [aiMsg(
-    `🎉 ${config.name}第 ${cycle.cycleNumber} 轮完成！${suggestion}\n\n想开始下一轮的话，直接告诉我目标就行。`,
+    locale === 'zh-CN'
+      ? `🎉 ${getLoopConfigLabel(config.id, locale)}第 ${cycle.cycleNumber} 轮完成！${suggestion}\n\n想开始下一轮的话，直接告诉我目标就行。`
+      : `🎉 ${getLoopConfigLabel(config.id, locale)} cycle #${cycle.cycleNumber} is complete.${suggestion}\n\nTell me the next goal when you want to run another cycle.`,
     'cycle_complete',
     {
       actions: [
-        { id: 'next-cycle', label: '开始下一轮', variant: 'primary', action: { type: 'start_loop' } },
+        { id: 'next-cycle', label: locale === 'zh-CN' ? '开始下一轮' : 'Start next cycle', variant: 'primary', action: { type: 'start_loop' } },
       ],
       cycleId: cycle.id,
     },
@@ -257,28 +276,42 @@ export class LoopChatController {
   private session: LoopChatSession;
   private config: CentaurLoopConfig;
   private onUpdate: (session: LoopChatSession) => void;
+  private locale: Locale;
 
   constructor(
     config: CentaurLoopConfig,
     onUpdate: (session: LoopChatSession) => void,
+    locale: Locale = 'zh-CN',
   ) {
     this.config = config;
     this.onUpdate = onUpdate;
+    this.locale = locale;
     this.session = {
       id: `chat-${Date.now().toString(36)}`,
       loopConfigId: config.id,
       cycleId: null,
       messages: [
         aiMsg(
-          `👋 我是你的${config.name}助手。\n\n${config.description}\n\n告诉我${config.cyclePeriod === 'daily' ? '今天' : '这周'}的目标，我来帮你启动闭环。`,
+          locale === 'zh-CN'
+            ? `👋 我是你的${getLoopConfigLabel(config.id, locale)}助手。\n\n${getLoopConfigDescription(config.id, locale)}\n\n告诉我${config.cyclePeriod === 'daily' ? '今天' : '这周'}的目标，我来帮你启动闭环。`
+            : `👋 I am your ${getLoopConfigLabel(config.id, locale)} assistant.\n\n${getLoopConfigDescription(config.id, locale)}\n\nTell me the goal for this ${config.cyclePeriod === 'daily' ? 'day' : 'week'}, and I will start the loop.`,
           'text',
           {
             actions: [
               {
                 id: 'start-seo',
-                label: config.cyclePeriod === 'daily' ? '帮我做今日选题' : '帮我做本周增长',
+                label: locale === 'zh-CN'
+                  ? config.cyclePeriod === 'daily' ? '帮我做今日选题' : '帮我做本周增长'
+                  : config.cyclePeriod === 'daily' ? 'Plan today\'s topic' : 'Plan this week\'s growth loop',
                 variant: 'primary',
-                action: { type: 'start_loop', payload: { goal: config.cyclePeriod === 'daily' ? '今天帮我出一条有策略的短视频' : '这周帮我做一轮SEO增长' } },
+                action: {
+                  type: 'start_loop',
+                  payload: {
+                    goal: locale === 'zh-CN'
+                      ? config.cyclePeriod === 'daily' ? '今天帮我出一条有策略的短视频' : '这周帮我做一轮SEO增长'
+                      : config.cyclePeriod === 'daily' ? 'Plan one strategic short video for today' : 'Run a content growth loop about AI agent feedback loops this week',
+                  },
+                },
               },
             ],
           },
@@ -312,6 +345,7 @@ export class LoopChatController {
       connected: true,
       ownerContext: '',
       businessContext: '',
+      outputLanguage: getOutputLanguageInstruction(this.locale),
       pushBubble: this.noop,
     };
   }
@@ -362,7 +396,7 @@ export class LoopChatController {
             status: 'confirmed',
             confirmation: { status: 'approved', confirmedAt: now() },
           });
-          this.pushMessages([aiMsg('✅ 已确认。')]);
+          this.pushMessages([aiMsg(this.locale === 'zh-CN' ? '✅ 已确认。' : '✅ Approved.')]);
 
           // 检查是否全部审完
           const fresh = useLoopStore.getState().cycles[cycle.id];
@@ -389,7 +423,7 @@ export class LoopChatController {
             });
           }
         }
-        this.pushMessages([aiMsg('✅ 全部通过！')]);
+        this.pushMessages([aiMsg(this.locale === 'zh-CN' ? '✅ 全部通过！' : '✅ All drafts approved.')]);
         await this.advanceAndTranslate();
         return;
       }
@@ -397,8 +431,10 @@ export class LoopChatController {
       case 'reject':
       case 'modify': {
         if (!cycle) return;
-        const note = action.payload?.note ?? '需要修改';
-        this.pushMessages([aiMsg(`收到，我记下了你的意见：「${note}」\n\n目前先继续推进，下一轮会结合这个反馈优化。`)]);
+        const note = action.payload?.note ?? (this.locale === 'zh-CN' ? '需要修改' : 'Needs changes');
+        this.pushMessages([aiMsg(this.locale === 'zh-CN'
+          ? `收到，我记下了你的意见：「${note}」\n\n目前先继续推进，下一轮会结合这个反馈优化。`
+          : `Got it. I recorded your change request: "${note}".\n\nFor this MVP I will continue the loop and use this as improvement context.`)]);
 
         // 暂时按确认处理，后续接入重新生成
         const waitingCp = cycle.checkpoints.find((cp) => cp.status === 'waiting');
@@ -417,7 +453,7 @@ export class LoopChatController {
             });
           }
         }
-        this.pushMessages([aiMsg('👍 已标记发布。')]);
+        this.pushMessages([aiMsg(this.locale === 'zh-CN' ? '👍 已标记发布。' : '👍 Marked as published.')]);
         const waitingCp = cycle.checkpoints.find((cp) => cp.status === 'waiting');
         if (waitingCp) store.resolveCheckpoint(cycle.id, waitingCp.id);
         await this.advanceAndTranslate();
@@ -440,7 +476,7 @@ export class LoopChatController {
             store.updateTask(cycle.id, task.id, { feedback, status: 'feedback_done' });
           }
         }
-        this.pushMessages([aiMsg('📊 收到反馈数据，开始复盘分析…')]);
+        this.pushMessages([aiMsg(this.locale === 'zh-CN' ? '📊 收到反馈数据，开始复盘分析…' : '📊 Feedback received. Starting review...')]);
         const waitingCp = cycle.checkpoints.find((cp) => cp.status === 'waiting');
         if (waitingCp) store.resolveCheckpoint(cycle.id, waitingCp.id);
         await this.advanceAndTranslate();
@@ -467,7 +503,9 @@ export class LoopChatController {
 
   private async startCycle(goal: string): Promise<void> {
     const store = useLoopStore.getState();
-    this.pushMessages([aiMsg(`🚀 收到！目标：「${goal}」\n\n正在规划…`, 'progress', { progressStage: 'planning' })]);
+    this.pushMessages([aiMsg(this.locale === 'zh-CN'
+      ? `🚀 收到！目标：「${goal}」\n\n正在规划…`
+      : `🚀 Got it. Goal: "${goal}"\n\nPlanning now...`, 'progress', { progressStage: 'planning' })]);
     this.setStatus('running');
 
     const cycleId = store.startCycle(this.config.id, goal, 'manual');
@@ -487,7 +525,7 @@ export class LoopChatController {
       await advanceLoop(this.session.cycleId, this.advanceContext);
     } catch (error) {
       const msg = error instanceof Error ? error.message : String(error);
-      this.pushMessages([aiMsg(`❌ 出了点问题：${msg}`)]);
+      this.pushMessages([aiMsg(this.locale === 'zh-CN' ? `❌ 出了点问题：${msg}` : `❌ Something went wrong: ${msg}`)]);
       this.setStatus('waiting_human');
       return;
     }
@@ -507,21 +545,21 @@ export class LoopChatController {
   private translateStage(cycle: LoopCycle): LoopMessage[] {
     switch (cycle.stage) {
       case 'awaiting_plan_review':
-        return buildPlanMessage(cycle, this.config);
+        return buildPlanMessage(cycle, this.config, this.locale);
       case 'awaiting_review':
-        return buildDraftMessages(cycle);
+        return buildDraftMessages(cycle, this.locale);
       case 'awaiting_publish':
-        return buildPublishMessage(cycle);
+        return buildPublishMessage(cycle, this.locale);
       case 'awaiting_feedback':
-        return buildFeedbackRequest(cycle, this.config);
+        return buildFeedbackRequest(cycle, this.config, this.locale);
       case 'awaiting_memory':
-        return buildReviewMessage(cycle);
+        return buildReviewMessage(cycle, this.locale);
       case 'cycle_complete':
-        return [...buildReviewMessage(cycle), ...buildCompleteMessage(cycle, this.config)];
+        return [...buildReviewMessage(cycle, this.locale), ...buildCompleteMessage(cycle, this.config, this.locale)];
       case 'planning':
       case 'generating':
       case 'reviewing_auto':
-        return [aiMsg('⏳ AI 正在工作…', 'progress', { progressStage: cycle.stage })];
+        return [aiMsg(this.locale === 'zh-CN' ? '⏳ AI 正在工作…' : '⏳ AI is working...', 'progress', { progressStage: cycle.stage })];
       default:
         return [];
     }

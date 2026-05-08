@@ -7,16 +7,25 @@ export interface RuntimeStatus {
   configured: boolean;
   available: boolean;
   message: string;
+  selectedRuntimeId?: string;
 }
 
-export const RUNTIME_CONNECTORS = [
-  { id: 'local-demo', label: 'Local demo', status: 'available' },
-  { id: 'openai-compatible', label: 'OpenAI-compatible', status: 'available' },
-  { id: 'langgraph', label: 'LangGraph', status: 'planned' },
-  { id: 'temporal', label: 'Temporal', status: 'planned' },
-  { id: 'inngest', label: 'Inngest', status: 'planned' },
-  { id: 'n8n', label: 'n8n', status: 'planned' },
-] as const;
+export interface RuntimeConnector {
+  id: string;
+  label: string;
+  provider: string;
+  endpoint?: string;
+  model: string;
+  configured: boolean;
+  available: boolean;
+  kind: 'demo' | 'openai-compatible' | 'ollama';
+  message: string;
+}
+
+export interface RuntimeScanResult {
+  connectors: RuntimeConnector[];
+  selectedRuntimeId: string;
+}
 
 const DEMO_STATUS: RuntimeStatus = {
   mode: 'demo',
@@ -38,11 +47,52 @@ export async function fetchRuntimeStatus(): Promise<RuntimeStatus> {
   }
 }
 
-export async function invokeRuntimeModel(prompt: string): Promise<{ text: string; provider: string; model: string }> {
+export async function scanRuntimeConnectors(): Promise<RuntimeScanResult> {
+  try {
+    const response = await fetch('/api/runtime/scan', { headers: { accept: 'application/json' } });
+    if (!response.ok) {
+      return {
+        connectors: [{
+          id: 'local-demo',
+          label: 'Local demo runtime',
+          provider: 'local-demo',
+          model: 'demo',
+          configured: true,
+          available: true,
+          kind: 'demo',
+          message: 'Built-in deterministic demo runtime.',
+        }],
+        selectedRuntimeId: 'local-demo',
+      };
+    }
+    return await response.json() as RuntimeScanResult;
+  } catch {
+    return {
+      connectors: [{
+        id: 'local-demo',
+        label: 'Local demo runtime',
+        provider: 'local-demo',
+        model: 'demo',
+        configured: true,
+        available: true,
+        kind: 'demo',
+        message: 'Built-in deterministic demo runtime.',
+      }],
+      selectedRuntimeId: 'local-demo',
+    };
+  }
+}
+
+function readSelectedRuntimeId(): string | undefined {
+  if (typeof window === 'undefined') return undefined;
+  return window.localStorage.getItem('centaur_loop_runtime_id') ?? undefined;
+}
+
+export async function invokeRuntimeModel(prompt: string): Promise<{ text: string; provider: string; model: string; runtimeId?: string }> {
   const response = await fetch('/api/model', {
     method: 'POST',
     headers: { 'content-type': 'application/json', accept: 'application/json' },
-    body: JSON.stringify({ prompt }),
+    body: JSON.stringify({ prompt, runtimeId: readSelectedRuntimeId() }),
   });
 
   if (!response.ok) {
@@ -50,12 +100,12 @@ export async function invokeRuntimeModel(prompt: string): Promise<{ text: string
     throw new Error(body || `Runtime request failed: ${response.status}`);
   }
 
-  const payload = await response.json() as { text?: string; provider?: string; model?: string };
+  const payload = await response.json() as { text?: string; provider?: string; model?: string; runtimeId?: string };
   if (!payload.text?.trim()) throw new Error('Runtime returned no text.');
   return {
     text: payload.text.trim(),
     provider: payload.provider ?? 'openai-compatible',
     model: payload.model ?? 'unknown',
+    runtimeId: payload.runtimeId,
   };
 }
-
