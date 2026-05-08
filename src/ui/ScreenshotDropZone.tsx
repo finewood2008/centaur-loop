@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Loader2, Camera } from 'lucide-react';
+import { useI18n } from '../i18n';
 
 interface ScreenshotDropZoneProps {
   onScreenshot: (base64: string) => void;
@@ -7,6 +8,7 @@ interface ScreenshotDropZoneProps {
 }
 
 export default function ScreenshotDropZone({ onScreenshot, processing }: ScreenshotDropZoneProps) {
+  const { t } = useI18n();
   const [dragOver, setDragOver] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -63,13 +65,13 @@ export default function ScreenshotDropZone({ onScreenshot, processing }: Screens
       {processing ? (
         <>
           <Loader2 size={24} className="animate-spin text-terracotta" />
-          <span className="text-sm text-olive-gray">正在识别截图数据…</span>
+          <span className="text-sm text-olive-gray">{t('screenshot.processing')}</span>
         </>
       ) : (
         <>
           <Camera size={24} className="text-stone-gray" />
-          <span className="text-sm text-olive-gray">拖入或粘贴平台数据截图</span>
-          <span className="text-xs text-stone-gray">支持 Ctrl+V 粘贴</span>
+          <span className="text-sm text-olive-gray">{t('screenshot.drop')}</span>
+          <span className="text-xs text-stone-gray">{t('screenshot.paste')}</span>
         </>
       )}
     </div>

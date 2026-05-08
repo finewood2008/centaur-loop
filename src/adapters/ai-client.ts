@@ -3,10 +3,11 @@
  *
  * 在独立产品中替代 centaurai-edge 的 qeeclaw SDK。
  * 提供统一的 AI 调用接口，支持多种后端：
- * - demo: 返回模拟数据（默认，用于展示）
- * - qeeclaw: 连接 QeeClaw bridge
- * - openai: 直连 OpenAI 兼容接口（TODO）
+ * - openai-compatible: 通过本地 Vite API proxy 调用真实模型
+ * - demo: 无 key 或 proxy 不可用时自动降级，返回模拟数据
  */
+
+import { invokeRuntimeModel } from './runtime';
 
 export interface AIClient {
   models: {
@@ -14,7 +15,26 @@ export interface AIClient {
   };
 }
 
+export type AIClientMode = 'real' | 'demo';
+
+let _lastClientMode: AIClientMode = 'demo';
+
+export function getLastClientMode(): AIClientMode {
+  return _lastClientMode;
+}
+
+function setLastClientMode(mode: AIClientMode): void {
+  _lastClientMode = mode;
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new CustomEvent('centaur-runtime-mode', { detail: { mode } }));
+  }
+}
+
 // ── Demo 模拟客户端 ──────────────────────────────────────────────
+
+function wantsEnglish(prompt: string): boolean {
+  return /Use clear, concise English|Output language:\s*English|English/i.test(prompt);
+}
 
 function createDemoClient(): AIClient {
   return {
@@ -44,10 +64,31 @@ function createDemoClient(): AIClient {
 }
 
 function generateDemoPlanResponse(prompt: string): string {
+  const english = wantsEnglish(prompt);
   const isSEO = prompt.includes('SEO') || prompt.includes('seo');
   const isVideo = prompt.includes('短视频') || prompt.includes('video');
 
   if (isVideo) {
+    if (english) {
+      return JSON.stringify({
+        summary: 'Today\'s topic: show how a human-governed AI feedback loop turns one short-video idea into a reusable growth lesson.',
+        platforms: ['TikTok', 'YouTube Shorts'],
+        keywords: ['AI agents', 'feedback loops', 'human-in-the-loop'],
+        tasks: [
+          {
+            appToolId: 'short-video-script-generator',
+            appName: 'Short-video script',
+            artifactType: 'video_script',
+            inputParams: {
+              topic: 'A 60-second explainer for Centaur Loop',
+              style: 'product demo',
+              duration: '60 seconds',
+            },
+          },
+        ],
+      });
+    }
+
     return JSON.stringify({
       summary: '今日选题：用手机演示如何3分钟部署一个本地AI员工，突出"不用写代码"的卖点',
       platforms: ['抖音', '视频号'],
@@ -68,6 +109,44 @@ function generateDemoPlanResponse(prompt: string): string {
   }
 
   if (isSEO) {
+    if (english) {
+      return JSON.stringify({
+        summary: 'This week, publish three content assets explaining why agents need feedback loops, not just scheduled runs.',
+        platforms: ['Blog', 'LinkedIn', 'GitHub'],
+        keywords: ['AI agent feedback loop', 'human-in-the-loop agents', 'agent runtime'],
+        tasks: [
+          {
+            appToolId: 'wechat-article-generator',
+            appName: 'Long-form article',
+            artifactType: 'article',
+            inputParams: {
+              topic: 'Why AI agents need feedback loops, not just cron jobs',
+              keywords: 'AI agents, feedback loops, human-in-the-loop',
+              tone: 'clear and technical',
+            },
+          },
+          {
+            appToolId: 'xiaohongshu-note-generator',
+            appName: 'Social post',
+            artifactType: 'social_post',
+            inputParams: {
+              topic: 'Cron wakes agents up. Feedback loops make them improve.',
+              style: 'developer-focused',
+            },
+          },
+          {
+            appToolId: 'seo-article-writer',
+            appName: 'SEO article',
+            artifactType: 'seo_article',
+            inputParams: {
+              keyword: 'AI agent feedback loop',
+              outline: 'Problem -> Human gates -> Feedback -> Review -> Memory -> Next cycle',
+            },
+          },
+        ],
+      });
+    }
+
     return JSON.stringify({
       summary: '本周围绕"本地AI部署"主题，生产3篇深度文章和2条小红书笔记，覆盖搜索和AI回答场景',
       platforms: ['公众号', '小红书', '知乎'],
@@ -104,6 +183,22 @@ function generateDemoPlanResponse(prompt: string): string {
     });
   }
 
+  if (english) {
+    return JSON.stringify({
+      summary: 'This cycle will produce a focused content plan around AI feedback loops.',
+      platforms: ['Blog', 'LinkedIn'],
+      keywords: ['AI agents'],
+      tasks: [
+        {
+          appToolId: 'wechat-article-generator',
+          appName: 'Long-form article',
+          artifactType: 'article',
+          inputParams: { topic: 'Introducing Centaur Loop' },
+        },
+      ],
+    });
+  }
+
   return JSON.stringify({
     summary: '本周内容计划：围绕核心产品优势产出多平台内容',
     platforms: ['公众号', '小红书'],
@@ -120,8 +215,32 @@ function generateDemoPlanResponse(prompt: string): string {
 }
 
 function generateDemoContentResponse(prompt: string): string {
+  const english = wantsEnglish(prompt);
   const isVideo = prompt.includes('视频') || prompt.includes('脚本');
   if (isVideo) {
+    if (english) {
+      return `# Centaur Loop in 60 Seconds — Short-Video Script
+
+## Hook (0-5s)
+[Shot] Screen recording of a loop dashboard.
+[Voiceover] "Most agents can run on a schedule. But do they learn after the work goes live?"
+
+## Problem (5-20s)
+[Shot] Show a one-shot AI result fading out.
+[Voiceover] "A cron job wakes an agent up. A workflow moves it through steps. Neither guarantees that real-world feedback improves the next run."
+
+## Loop (20-45s)
+[Shot] Highlight Plan, Human Gate, Feedback, Review, Memory.
+[Voiceover] "Centaur Loop adds the missing operating layer: humans approve critical decisions, results come back, the agent reviews performance, and only approved lessons become memory."
+
+## Close (45-60s)
+[Shot] Start a second cycle with prior memory visible.
+[Voiceover] "The next cycle starts smarter. That is the difference between automation and improvement."
+
+---
+Tags: #AIAgents #HumanInTheLoop #OpenSource`;
+    }
+
     return `# 3分钟部署本地AI员工 — 拍摄脚本
 
 ## 开场（0-5秒）
@@ -147,6 +266,40 @@ function generateDemoContentResponse(prompt: string): string {
 ---
 **标签**: #AI员工 #本地部署 #不用写代码 #创业工具
 **发布时间建议**: 工作日 12:00-13:00`;
+  }
+
+  if (english) {
+    return `# Why AI Agents Need Feedback Loops, Not Just Cron Jobs
+
+Most AI automation starts with a schedule: every morning, generate a plan; every Friday, write a report; every hour, check a queue. Scheduling is useful, but it only answers one question: when should the agent wake up?
+
+The harder product question is what happens after the work leaves the chat window.
+
+## The Missing Layer
+
+A useful agent needs more than execution. It needs a loop:
+
+1. Plan around a clear goal.
+2. Stop at the moments where human judgment matters.
+3. Produce work that can be inspected and published.
+4. Collect real-world feedback.
+5. Review what happened.
+6. Turn useful lessons into approved memory.
+7. Start the next cycle with that memory.
+
+That is the Centaur Loop pattern.
+
+## Human Gates Are Not a Weakness
+
+For content, sales, support, compliance, and brand-sensitive work, humans should not be treated as an exception handler. Human judgment is part of the operating model.
+
+The agent should move fast where execution is safe and stop where taste, truth, risk, or business context matter.
+
+## Feedback Makes the Agent Improve
+
+Without feedback, an agent is just automation. With feedback and reviewed memory, each cycle can become more precise than the last.
+
+Centaur Loop turns that idea into a workbench: plan, approve, execute, publish, feed back, review, remember, and run again.`;
   }
 
   return `# 为什么越来越多企业选择本地部署AI？
@@ -180,6 +333,36 @@ function generateDemoContentResponse(prompt: string): string {
 }
 
 function generateDemoReviewResponse(): string {
+  return generateDemoReviewResponseForLocale(false);
+}
+
+function generateDemoReviewResponseForLocale(english: boolean): string {
+  if (english) {
+    return JSON.stringify({
+      summary: 'The cycle validated the core positioning: feedback loops are easier to understand when contrasted with cron jobs and one-shot workflows.',
+      effectivePoints: [
+        'The "Cron wakes agents up" line creates a clear category distinction.',
+        'Human gates made the loop feel practical rather than fully autonomous.',
+        'The memory step gave the demo a visible improvement mechanism.',
+      ],
+      ineffectivePoints: [
+        'The first draft was still too abstract for non-technical readers.',
+        'The social post needs a sharper visual hook.',
+      ],
+      dataHighlights: [
+        'Blog: 1,240 views, 68 likes',
+        'Social post: 42 saves, 16 comments',
+        'GitHub: 11 new stars after publishing',
+      ],
+      memoryCandidates: [
+        { content: 'Lead with "Cron wakes agents up. Feedback loops make them improve." when explaining Centaur Loop.', category: 'lesson' },
+        { content: 'Developer audiences respond better when Centaur Loop is positioned as a workbench, not another workflow engine.', category: 'lesson' },
+        { content: 'Show memory visibly before starting the second cycle.', category: 'preference' },
+      ],
+      nextSuggestion: 'Next cycle: turn the strongest positioning line into the README hero and create a short demo GIF showing memory being reused.',
+    });
+  }
+
   return JSON.stringify({
     summary: '本轮内容表现中等偏上，公众号文章阅读量超预期，小红书互动率有提升空间',
     effectivePoints: [
@@ -234,7 +417,24 @@ let _client: AIClient | null = null;
 
 export async function getClientAsync(): Promise<AIClient> {
   if (!_client) {
-    _client = createDemoClient();
+    _client = {
+      models: {
+        invoke: async ({ prompt }: { prompt: string }) => {
+          try {
+            const result = await invokeRuntimeModel(prompt);
+            setLastClientMode('real');
+            return result;
+          } catch {
+            setLastClientMode('demo');
+            const demo = createDemoClient();
+            if (prompt.includes('闭环复盘') || prompt.includes('review engine')) {
+              return { text: generateDemoReviewResponseForLocale(wantsEnglish(prompt)) };
+            }
+            return demo.models.invoke({ prompt });
+          }
+        },
+      },
+    };
   }
   return _client;
 }

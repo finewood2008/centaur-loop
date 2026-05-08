@@ -38,6 +38,7 @@ export async function executeTask(
   const client = await getClientAsync();
 
   const prompt = [
+    context.outputLanguage ? `Output language instruction: ${context.outputLanguage}` : '',
     '你是 Centaur Loop Engine 的内容生成引擎。',
     `应用名称：${task.appName}`,
     tool ? `应用说明：${tool.description}` : '',

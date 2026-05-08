@@ -58,6 +58,8 @@ function buildPlanPrompt(
   }
 
   return [
+    context.outputLanguage ? `Output language instruction: ${context.outputLanguage}` : '',
+    'Return JSON only. Do not wrap it in markdown.',
     `你是 Centaur Loop Engine 的「${config.name}」闭环规划器。`,
     `闭环定义：${config.description}`,
     `周期：${config.cyclePeriod === 'daily' ? '每天' : config.cyclePeriod === 'weekly' ? '每周' : '每两周'}`,

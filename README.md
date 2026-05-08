@@ -2,21 +2,27 @@
 
 English | [简体中文](./README.zh-CN.md)
 
-**The feedback-loop runtime for human-governed AI agents.**
+**The open-source workbench for human-governed AI feedback loops.**
 
-Centaur Loop helps you build agents that plan, pause for human judgment, execute, collect real-world feedback, review outcomes, remember what worked, and improve the next cycle.
+Centaur Loop is a workbench for driving and observing AI loops where humans keep judgment authority and agents improve through real-world feedback.
 
 ```text
 Plan -> Approve -> Execute -> Review -> Publish -> Feedback -> Reflect -> Remember -> Next Cycle
 ```
 
-Most agent systems can schedule work or pause for approval. Centaur Loop treats the full operating loop as the core abstraction: structured cycles, human gates, feedback, review, memory candidates, and next-cycle suggestions.
+Most agent systems can schedule work or pause for approval. Centaur Loop treats the full operating loop as the product surface: structured cycles, human gates, feedback, review, memory candidates, and next-cycle suggestions.
+
+## What Is Centaur Loop?
+
+Centaur Loop is a control plane for AI loops. Existing runtimes execute tasks; Centaur Loop governs the cycle around those tasks.
+
+It is not a cron scheduler, a generic graph workflow builder, a publishing bot, or a replacement for LangGraph, Temporal, Inngest, n8n, or Mastra. It is the missing feedback layer around agent work.
 
 ## Why This Exists
 
 Cron wakes agents up. Workflows move agents through steps. Centaur Loop helps agents learn from what happened after the work left the chat window.
 
-This project is built for AI products where humans remain responsible for judgment, quality, publishing, customer contact, compliance, or brand taste. The first examples focus on content growth loops such as SEO/GEO articles, social posts, and short-video scripts.
+This project is built for AI products where humans remain responsible for judgment, quality, publishing, customer contact, compliance, or brand taste. The MVP focuses on a content growth loop because it naturally demonstrates planning, review, publishing, feedback, retrospection, memory, and next-cycle improvement.
 
 ## Core Concepts
 
@@ -44,11 +50,13 @@ planning
 
 ## What Is Included Today
 
+- Workbench-first React app for driving a loop end to end.
 - TypeScript state machine for Centaur Loop cycles.
-- React + Zustand demo workspace.
 - Chat-first loop protocol for turning stages into messages and actions.
 - Human gate configuration and reminder hooks.
+- Real-model-first OpenAI-compatible runtime with demo fallback.
 - Demo AI client with mock planning, drafting, screenshot parsing, and review output.
+- Runtime connector registry showing available and planned adapters.
 - Two starter loop templates:
   - SEO/GEO growth loop
   - Short-video production loop
@@ -61,6 +69,28 @@ npm run dev
 ```
 
 Then open the Vite URL printed in your terminal.
+
+The app runs without any API key by automatically using the built-in demo runtime.
+
+## Real Model Runtime
+
+Centaur Loop can call any OpenAI-compatible chat completions endpoint through a local Vite proxy, so your API key never enters the frontend bundle.
+
+Create `.env.local`:
+
+```bash
+cp .env.example .env.local
+```
+
+Then configure:
+
+```bash
+CENTAUR_MODEL_BASE_URL=https://api.openai.com/v1
+CENTAUR_MODEL_API_KEY=your_key_here
+CENTAUR_MODEL_NAME=gpt-4o-mini
+```
+
+If the local proxy is not configured or the model request fails, the workbench visibly falls back to the demo runtime so the full loop remains usable.
 
 For a production build:
 

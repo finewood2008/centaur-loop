@@ -66,6 +66,8 @@ function buildReviewPrompt(
   }).join('\n\n');
 
   return [
+    context.outputLanguage ? `Output language instruction: ${context.outputLanguage}` : '',
+    'Return JSON only. Do not wrap it in markdown.',
     '你是 Centaur Loop Engine 的闭环复盘引擎。',
     `闭环名称：${config.name}`,
     `本轮目标：${cycle.goal}`,

@@ -2,21 +2,27 @@
 
 [English](./README.md) | 简体中文
 
-**面向人类治理型 AI Agent 的反馈闭环运行时。**
+**面向人类治理型 AI 反馈闭环的开源工作台。**
 
-Centaur Loop 帮助你构建这样的 Agent：它们会规划任务，在关键节点暂停等待人类判断，继续执行，收集真实世界反馈，复盘结果，记住有效经验，并改进下一轮循环。
+Centaur Loop 是一个用于驾驶和观察 AI 闭环的工作台。在这个闭环里，人类保留关键判断权，Agent 通过真实世界反馈持续进化。
 
 ```text
 规划 -> 确认 -> 执行 -> 审核 -> 发布 -> 反馈 -> 复盘 -> 记忆 -> 下一轮
 ```
 
-大多数 Agent 系统可以定时运行，也可以在审批点暂停。Centaur Loop 把完整运营闭环作为核心抽象：结构化循环、人工卡点、反馈、复盘、记忆候选，以及下一轮建议。
+大多数 Agent 系统可以定时运行，也可以在审批点暂停。Centaur Loop 把完整运营闭环变成产品界面：结构化循环、人工卡点、反馈、复盘、记忆候选，以及下一轮建议。
+
+## Centaur Loop 是什么？
+
+Centaur Loop 是 AI Loop 的控制台 / 控制平面。现有 runtime 负责任务执行，Centaur Loop 负责治理围绕任务发生的完整循环。
+
+它不是 cron 定时任务系统，不是通用图形化 workflow builder，不是发布机器人，也不是 LangGraph、Temporal、Inngest、n8n 或 Mastra 的替代品。它是围绕 Agent 工作的反馈层。
 
 ## 为什么需要它
 
 Cron 让 Agent 醒来。Workflow 让 Agent 按步骤执行。Centaur Loop 让 Agent 从工作离开聊天窗口之后发生的真实结果中学习。
 
-这个项目面向这样的 AI 产品：人类仍然要对判断、质量、发布、客户触达、合规或品牌调性负责。当前示例优先聚焦内容增长闭环，例如 SEO/GEO 文章、社交媒体帖子和短视频脚本。
+这个项目面向这样的 AI 产品：人类仍然要对判断、质量、发布、客户触达、合规或品牌调性负责。MVP 聚焦内容增长闭环，因为它能自然展示计划、审核、发布、反馈、复盘、记忆和下一轮改进。
 
 ## 核心概念
 
@@ -44,11 +50,13 @@ planning
 
 ## 当前包含什么
 
+- Workbench-first React 应用，可端到端驾驶一轮闭环。
 - Centaur Loop 循环的 TypeScript 状态机。
-- React + Zustand 演示工作台。
 - Chat-first 对话协议，可把阶段翻译成消息和动作。
 - 人工卡点配置和提醒钩子。
+- 真实模型优先的 OpenAI-compatible runtime，并支持 demo fallback。
 - Demo AI client，包含模拟规划、生成、截图解析和复盘输出。
+- Runtime connector registry，用于展示已支持和计划中的 adapter。
 - 两个初始闭环模板：
   - SEO/GEO 增长闭环
   - 短视频生产闭环
@@ -61,6 +69,28 @@ npm run dev
 ```
 
 然后打开终端里 Vite 输出的 URL。
+
+不配置任何 API key 时，应用会自动使用内置 demo runtime，仍然可以完整跑通闭环。
+
+## 真实模型 Runtime
+
+Centaur Loop 可以通过本地 Vite proxy 调用任意 OpenAI-compatible chat completions 接口，因此 API key 不会进入前端包。
+
+创建 `.env.local`：
+
+```bash
+cp .env.example .env.local
+```
+
+然后配置：
+
+```bash
+CENTAUR_MODEL_BASE_URL=https://api.openai.com/v1
+CENTAUR_MODEL_API_KEY=your_key_here
+CENTAUR_MODEL_NAME=gpt-4o-mini
+```
+
+如果本地 proxy 没有配置，或者模型请求失败，工作台会明确显示并降级到 demo runtime，保证完整闭环仍然可用。
 
 生产构建：
 
@@ -92,4 +122,3 @@ npm run build
 ## 许可证
 
 MIT
-

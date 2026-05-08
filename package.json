@@ -1,7 +1,7 @@
 {
   "name": "centaur-loop",
   "version": "0.1.0",
-  "description": "The feedback-loop runtime for human-governed AI agents.",
+  "description": "The open-source workbench for human-governed AI feedback loops.",
   "type": "module",
   "license": "MIT",
   "repository": {

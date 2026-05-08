@@ -1,0 +1,343 @@
+import { createContext, useContext, useEffect, useMemo, useState } from 'react';
+
+export type Locale = 'en' | 'zh-CN';
+
+const STORAGE_KEY = 'centaur_loop_locale';
+
+const dictionaries = {
+  en: {
+    'app.tagline': 'Open-source workbench for human-governed AI feedback loops.',
+    'app.thesis': 'Cron wakes agents up. Workflows move agents through steps. Centaur Loop helps agents improve after feedback comes back.',
+    'app.github': 'GitHub',
+    'app.docs': 'Docs',
+    'app.language': '中文',
+    'runtime.title': 'Runtime',
+    'runtime.real': 'Real model',
+    'runtime.demo': 'Demo fallback',
+    'runtime.checking': 'Checking runtime',
+    'runtime.unavailable': 'Local model proxy unavailable. Running the full demo runtime.',
+    'runtime.available': 'OpenAI-compatible model is configured.',
+    'runtime.provider': 'Provider',
+    'runtime.model': 'Model',
+    'runtime.adapters': 'Adapter-ready',
+    'runtime.planned': 'planned',
+    'memory.confirmedTitle': 'Confirmed memory',
+    'memory.empty': 'No confirmed memory yet.',
+    'memory.used': 'Prior memory is being injected into this cycle.',
+    'memory.notUsed': 'No prior memory has been used yet.',
+    'loop.contentGrowth': 'Content Growth Loop',
+    'loop.videoProduction': 'Short Video Loop',
+    'loop.contentGrowth.description': 'Grow search and AI-answer visibility through planned content, feedback, review, and memory.',
+    'loop.videoProduction.description': 'Produce daily short-video scripts and improve topics through feedback.',
+    'stage.planning': 'Planning',
+    'stage.awaiting_plan_review': 'Plan review',
+    'stage.generating': 'Generating',
+    'stage.awaiting_review': 'Draft review',
+    'stage.awaiting_publish': 'Publish',
+    'stage.awaiting_feedback': 'Feedback',
+    'stage.reviewing_auto': 'Reviewing',
+    'stage.awaiting_memory': 'Memory',
+    'stage.cycle_complete': 'Complete',
+    'stageLabel.planning': 'Planning',
+    'stageLabel.awaiting_plan_review': 'Waiting for plan approval',
+    'stageLabel.generating': 'Generating',
+    'stageLabel.awaiting_review': 'Waiting for draft review',
+    'stageLabel.awaiting_publish': 'Waiting for publishing',
+    'stageLabel.awaiting_feedback': 'Waiting for feedback',
+    'stageLabel.reviewing_auto': 'Reviewing results',
+    'stageLabel.awaiting_memory': 'Waiting for memory approval',
+    'stageLabel.cycle_complete': 'Complete',
+    'workspace.startTitle': 'Start the content growth loop',
+    'workspace.restartTitle': 'Start a new cycle',
+    'workspace.goalPlaceholderWeekly': 'Example: produce 3 posts this week around "AI agent feedback loops"',
+    'workspace.goalPlaceholderDaily': 'Example: create a short video about AI feedback loops today',
+    'workspace.weekly': 'Weekly loop',
+    'workspace.daily': 'Daily loop',
+    'workspace.start': 'Start loop',
+    'workspace.planning': 'Planning...',
+    'workspace.aiWorking': 'AI is working. It will stop at the next human gate.',
+    'workspace.planTitleWeekly': 'This week\'s plan',
+    'workspace.planTitleDaily': 'Today\'s plan',
+    'workspace.platforms': 'Platforms',
+    'workspace.keywords': 'Keywords',
+    'workspace.tasks': 'Tasks',
+    'workspace.confirmPlan': 'Approve plan and generate',
+    'workspace.drafts': 'Review drafts',
+    'workspace.approveAll': 'Approve all',
+    'workspace.publishTitle': 'Publish content',
+    'workspace.publishHelp': 'Copy approved content to your target channel, then mark it as published.',
+    'workspace.copy': 'Copy',
+    'workspace.copied': 'Copied',
+    'workspace.markPublished': 'Mark published',
+    'workspace.markAllPublished': 'Mark all published',
+    'workspace.nextFeedback': 'Move to feedback',
+    'workspace.feedbackTitle': 'Collect outcome feedback',
+    'workspace.feedbackHelp': 'Submit real-world metrics or screenshots so the loop can review what worked.',
+    'workspace.feedbackReady': 'Feedback received',
+    'workspace.feedbackWaiting': 'Waiting',
+    'workspace.submitFeedback': 'Submit feedback and review',
+    'workspace.skipFeedback': 'Skip feedback and review',
+    'workspace.memoryTitle': 'Approve memory',
+    'workspace.reviewSummary': 'Review summary',
+    'workspace.finishCycle': 'Finish cycle',
+    'workspace.skipMemory': 'Skip memory approval',
+    'workspace.complete': 'Cycle complete',
+    'workspace.effective': 'What worked',
+    'workspace.nextSuggestion': 'Next-cycle suggestion',
+    'workspace.history': 'Cycle history',
+    'workspace.noCycle': 'No active cycle',
+    'workspace.unknown': 'Unknown stage',
+    'sidebar.progress': 'Loop progress',
+    'sidebar.cycle': 'Cycle',
+    'feedback.title': 'Feedback & memory',
+    'feedback.selectContent': 'Select content',
+    'feedback.screenshot': 'Screenshot feedback',
+    'feedback.quick': 'Quick feedback',
+    'feedback.published': 'Published',
+    'feedback.platform': 'Platform (WeChat / Xiaohongshu / LinkedIn...)',
+    'feedback.rating': 'Outcome rating',
+    'feedback.good': 'Good',
+    'feedback.ok': 'OK',
+    'feedback.bad': 'Bad',
+    'feedback.views': 'Views',
+    'feedback.likes': 'Likes',
+    'feedback.favorites': 'Saves',
+    'feedback.comments': 'Comments',
+    'feedback.note': 'Notes (optional)',
+    'feedback.submit': 'Submit feedback',
+    'feedback.drawer': 'Feedback',
+    'feedback.close': 'Close',
+    'draft.view': 'View full',
+    'draft.approve': 'Approve',
+    'draft.reject': 'Change request',
+    'draft.confirmed': 'Approved',
+    'draft.rejected': 'Rejected',
+    'draft.rejectNote': 'Change request',
+    'draft.rejectPlaceholder': 'Describe what should change...',
+    'draft.submitReject': 'Submit',
+    'draft.cancel': 'Cancel',
+    'draft.expand': 'Expand',
+    'draft.collapse': 'Collapse',
+    'memory.candidates': 'Memory candidates',
+    'memory.confirm': 'Save memory',
+    'memory.reject': 'Do not save',
+    'memory.preference': 'Preference',
+    'memory.fact': 'Fact',
+    'memory.lesson': 'Lesson',
+    'memory.correction': 'Correction',
+    'history.empty': 'No completed cycles yet',
+    'history.inProgress': 'In progress',
+    'history.outputs': 'outputs',
+    'history.review': 'Review',
+    'history.next': 'Next',
+    'screenshot.processing': 'Reading screenshot metrics...',
+    'screenshot.drop': 'Drop or paste a platform analytics screenshot',
+    'screenshot.paste': 'Supports paste from clipboard',
+    'artifact.article': 'Article',
+    'artifact.social_post': 'Social post',
+    'artifact.video_script': 'Video script',
+    'artifact.seo_article': 'SEO article',
+    'artifact.geo_content': 'GEO content',
+    'artifact.content_plan': 'Content plan',
+    'artifact.review_report': 'Review report',
+    'common.none': 'None',
+  },
+  'zh-CN': {
+    'app.tagline': '面向人类治理型 AI 反馈闭环的开源工作台。',
+    'app.thesis': 'Cron 让 Agent 醒来。Workflow 让 Agent 按步骤执行。Centaur Loop 让 Agent 在真实反馈回来之后持续进化。',
+    'app.github': 'GitHub',
+    'app.docs': '文档',
+    'app.language': 'English',
+    'runtime.title': 'Runtime',
+    'runtime.real': '真实模型',
+    'runtime.demo': 'Demo 降级',
+    'runtime.checking': '正在检查 runtime',
+    'runtime.unavailable': '本地模型代理不可用，当前使用完整 demo runtime。',
+    'runtime.available': 'OpenAI-compatible 模型已配置。',
+    'runtime.provider': 'Provider',
+    'runtime.model': 'Model',
+    'runtime.adapters': 'Adapter-ready',
+    'runtime.planned': 'planned',
+    'memory.confirmedTitle': '已确认记忆',
+    'memory.empty': '还没有已确认记忆。',
+    'memory.used': '本轮正在注入历史记忆。',
+    'memory.notUsed': '本轮还未使用历史记忆。',
+    'loop.contentGrowth': '内容增长闭环',
+    'loop.videoProduction': '短视频闭环',
+    'loop.contentGrowth.description': '通过计划、内容、反馈、复盘和记忆持续提升搜索与 AI 回答可见度。',
+    'loop.videoProduction.description': '每天产出短视频脚本，并用反馈持续优化选题。',
+    'stage.planning': '规划',
+    'stage.awaiting_plan_review': '确认计划',
+    'stage.generating': '生成',
+    'stage.awaiting_review': '审核',
+    'stage.awaiting_publish': '发布',
+    'stage.awaiting_feedback': '反馈',
+    'stage.reviewing_auto': '复盘',
+    'stage.awaiting_memory': '记忆',
+    'stage.cycle_complete': '完成',
+    'stageLabel.planning': '规划中',
+    'stageLabel.awaiting_plan_review': '待确认计划',
+    'stageLabel.generating': '生成中',
+    'stageLabel.awaiting_review': '待审核草稿',
+    'stageLabel.awaiting_publish': '待发布',
+    'stageLabel.awaiting_feedback': '待反馈',
+    'stageLabel.reviewing_auto': '复盘中',
+    'stageLabel.awaiting_memory': '待确认记忆',
+    'stageLabel.cycle_complete': '已完成',
+    'workspace.startTitle': '启动内容增长闭环',
+    'workspace.restartTitle': '开始新一轮',
+    'workspace.goalPlaceholderWeekly': '例如：这周围绕“AI Agent 反馈闭环”生产 3 篇内容',
+    'workspace.goalPlaceholderDaily': '例如：今天做一条关于 AI 反馈闭环的短视频',
+    'workspace.weekly': '周循环',
+    'workspace.daily': '日循环',
+    'workspace.start': '开始闭环',
+    'workspace.planning': '规划中…',
+    'workspace.aiWorking': 'AI 正在工作，完成后会停在下一个人工卡点。',
+    'workspace.planTitleWeekly': '本周计划',
+    'workspace.planTitleDaily': '今日计划',
+    'workspace.platforms': '平台',
+    'workspace.keywords': '关键词',
+    'workspace.tasks': '任务列表',
+    'workspace.confirmPlan': '确认计划，开始生成',
+    'workspace.drafts': '审核草稿',
+    'workspace.approveAll': '全部确认',
+    'workspace.publishTitle': '发布内容',
+    'workspace.publishHelp': '请将确认的内容复制到目标平台发布，然后标记已发布。',
+    'workspace.copy': '复制',
+    'workspace.copied': '已复制',
+    'workspace.markPublished': '标记已发布',
+    'workspace.markAllPublished': '全部标记已发布',
+    'workspace.nextFeedback': '进入反馈阶段',
+    'workspace.feedbackTitle': '等待效果反馈',
+    'workspace.feedbackHelp': '提交真实指标或截图，让闭环复盘什么有效。',
+    'workspace.feedbackReady': '已反馈',
+    'workspace.feedbackWaiting': '等待中',
+    'workspace.submitFeedback': '提交反馈，开始复盘',
+    'workspace.skipFeedback': '跳过反馈，直接复盘',
+    'workspace.memoryTitle': '确认经验记忆',
+    'workspace.reviewSummary': '复盘总结',
+    'workspace.finishCycle': '完成本轮',
+    'workspace.skipMemory': '跳过记忆确认',
+    'workspace.complete': '本轮完成',
+    'workspace.effective': '有效点',
+    'workspace.nextSuggestion': '下一轮建议',
+    'workspace.history': '历史循环',
+    'workspace.noCycle': '暂无活跃循环',
+    'workspace.unknown': '未知状态',
+    'sidebar.progress': '闭环进度',
+    'sidebar.cycle': '第',
+    'feedback.title': '反馈与记忆',
+    'feedback.selectContent': '选择内容',
+    'feedback.screenshot': '截图反馈',
+    'feedback.quick': '快速反馈',
+    'feedback.published': '已发布',
+    'feedback.platform': '发布平台（公众号/小红书/LinkedIn…）',
+    'feedback.rating': '效果评价',
+    'feedback.good': '好',
+    'feedback.ok': '一般',
+    'feedback.bad': '差',
+    'feedback.views': '阅读量',
+    'feedback.likes': '点赞',
+    'feedback.favorites': '收藏',
+    'feedback.comments': '评论',
+    'feedback.note': '补充说明（可选）',
+    'feedback.submit': '提交反馈',
+    'feedback.drawer': '反馈',
+    'feedback.close': '关闭',
+    'draft.view': '查看全文',
+    'draft.approve': '确认',
+    'draft.reject': '修改意见',
+    'draft.confirmed': '已确认',
+    'draft.rejected': '已退回',
+    'draft.rejectNote': '退回意见',
+    'draft.rejectPlaceholder': '请说明需要修改的地方…',
+    'draft.submitReject': '提交退回',
+    'draft.cancel': '取消',
+    'draft.expand': '展开全文',
+    'draft.collapse': '收起',
+    'memory.candidates': '经验记忆候选',
+    'memory.confirm': '确认写入',
+    'memory.reject': '不沉淀',
+    'memory.preference': '偏好',
+    'memory.fact': '事实',
+    'memory.lesson': '经验',
+    'memory.correction': '纠正',
+    'history.empty': '暂无历史循环',
+    'history.inProgress': '进行中',
+    'history.outputs': '篇产出',
+    'history.review': '复盘总结',
+    'history.next': '下轮建议',
+    'screenshot.processing': '正在识别截图数据…',
+    'screenshot.drop': '拖入或粘贴平台数据截图',
+    'screenshot.paste': '支持 Ctrl+V 粘贴',
+    'artifact.article': '公众号',
+    'artifact.social_post': '社交帖',
+    'artifact.video_script': '视频脚本',
+    'artifact.seo_article': 'SEO 文章',
+    'artifact.geo_content': 'GEO 内容',
+    'artifact.content_plan': '内容计划',
+    'artifact.review_report': '复盘报告',
+    'common.none': '无',
+  },
+} as const;
+
+type MessageKey = keyof typeof dictionaries.en;
+
+interface I18nContextValue {
+  locale: Locale;
+  setLocale: (locale: Locale) => void;
+  toggleLocale: () => void;
+  t: (key: MessageKey) => string;
+}
+
+const I18nContext = createContext<I18nContextValue | null>(null);
+
+function readInitialLocale(): Locale {
+  if (typeof window === 'undefined') return 'en';
+  const saved = window.localStorage.getItem(STORAGE_KEY);
+  return saved === 'zh-CN' ? 'zh-CN' : 'en';
+}
+
+export function I18nProvider({ children }: { children: React.ReactNode }) {
+  const [locale, setLocaleState] = useState<Locale>(readInitialLocale);
+
+  useEffect(() => {
+    window.localStorage.setItem(STORAGE_KEY, locale);
+    document.documentElement.lang = locale;
+  }, [locale]);
+
+  const value = useMemo<I18nContextValue>(() => {
+    const setLocale = (next: Locale) => setLocaleState(next);
+    return {
+      locale,
+      setLocale,
+      toggleLocale: () => setLocaleState((current) => current === 'en' ? 'zh-CN' : 'en'),
+      t: (key) => dictionaries[locale][key] ?? dictionaries.en[key],
+    };
+  }, [locale]);
+
+  return <I18nContext.Provider value={value}>{children}</I18nContext.Provider>;
+}
+
+export function useI18n(): I18nContextValue {
+  const ctx = useContext(I18nContext);
+  if (!ctx) throw new Error('useI18n must be used inside I18nProvider');
+  return ctx;
+}
+
+export function getLoopConfigLabel(configId: string, locale: Locale): string {
+  if (configId === 'video-production') return dictionaries[locale]['loop.videoProduction'];
+  return dictionaries[locale]['loop.contentGrowth'];
+}
+
+export function getLoopConfigDescription(configId: string, locale: Locale): string {
+  if (configId === 'video-production') return dictionaries[locale]['loop.videoProduction.description'];
+  return dictionaries[locale]['loop.contentGrowth.description'];
+}
+
+export function getOutputLanguageInstruction(locale: Locale): string {
+  return locale === 'zh-CN'
+    ? '请使用简体中文输出。'
+    : 'Use clear, concise English for all user-facing output.';
+}
+

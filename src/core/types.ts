@@ -198,6 +198,7 @@ export interface LoopCycle {
   tasks: LoopTask[];
   review?: LoopCycleReview;
   memoryCandidates: MemoryCandidate[];
+  usedMemories?: string[];
   nextSuggestion?: string;
   checkpoints: HumanCheckpoint[];
   createdAt: string;
@@ -233,6 +234,7 @@ export interface LoopAdvanceContext {
   connected: boolean;
   ownerContext: string;
   businessContext: string;
+  outputLanguage?: string;
   pushBubble: (bubble: SpiritBubblePayload) => void;
 }
 
@@ -240,6 +242,7 @@ export interface LoopPlanContext {
   ownerContext: string;
   businessContext: string;
   memories: string[];
+  outputLanguage?: string;
   previousSuggestion?: string;
   recentFeedbacks?: string[];
 }
@@ -249,12 +252,14 @@ export interface LoopExecuteContext {
   ownerContext: string;
   businessContext: string;
   memories: string[];
+  outputLanguage?: string;
 }
 
 export interface LoopReviewContext {
   ownerContext: string;
   businessContext: string;
   memories: string[];
+  outputLanguage?: string;
 }
 
 export interface LoopReviewResult {

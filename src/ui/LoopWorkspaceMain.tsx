@@ -4,6 +4,7 @@ import {
   RefreshCw, Send, Sparkles,
 } from 'lucide-react';
 import type { CentaurLoopConfig, LoopCycle, QuickFeedbackInput } from '../core/types';
+import { useI18n, getLoopConfigLabel } from '../i18n';
 import LoopDraftCard from './LoopDraftCard';
 import LoopMemoryPanel from './LoopMemoryPanel';
 import LoopHistoryTimeline from './LoopHistoryTimeline';
@@ -34,8 +35,10 @@ export default function LoopWorkspaceMain({
   onMarkPublished, onMarkAllPublished, onSubmitAllFeedback,
   onConfirmMemory, onRejectMemory, onConfirmAllMemory, onAdvance,
 }: LoopWorkspaceMainProps) {
+  const { t, locale } = useI18n();
   const [goalDraft, setGoalDraft] = useState('');
   const [copiedTaskId, setCopiedTaskId] = useState<string | null>(null);
+  const configLabel = getLoopConfigLabel(config.id, locale);
 
   // 无活跃循环 / 已完成
   if (!cycle || cycle.stage === 'cycle_complete') {
@@ -45,12 +48,12 @@ export default function LoopWorkspaceMain({
           <section className="card-glass-warm p-5">
             <div className="flex items-center gap-2 mb-3">
               <CheckCircle2 size={18} className="text-sage-green" />
-              <h3 className="text-sm font-semibold text-near-black">第 {cycle.cycleNumber} 轮完成</h3>
+              <h3 className="text-sm font-semibold text-near-black">{t('workspace.complete')} · #{cycle.cycleNumber}</h3>
             </div>
             <p className="text-sm text-olive-gray">{cycle.review.summary}</p>
             {cycle.review.effectivePoints.length > 0 && (
               <div className="mt-3">
-                <p className="text-label text-sage-green">有效点</p>
+                <p className="text-label text-sage-green">{t('workspace.effective')}</p>
                 <ul className="mt-1 space-y-1">
                   {cycle.review.effectivePoints.map((p, i) => (
                     <li key={i} className="text-sm text-olive-gray">{p}</li>
@@ -60,7 +63,7 @@ export default function LoopWorkspaceMain({
             )}
             {cycle.nextSuggestion && (
               <div className="mt-3 rounded-xl border border-terracotta/15 bg-terracotta/5 p-3">
-                <p className="text-label text-terracotta">下一轮建议</p>
+                <p className="text-label text-terracotta">{t('workspace.nextSuggestion')}</p>
                 <p className="mt-1 text-sm text-near-black">{cycle.nextSuggestion}</p>
               </div>
             )}
@@ -69,31 +72,31 @@ export default function LoopWorkspaceMain({
 
         <section className="card-glass p-5">
           <h3 className="text-sm font-semibold text-near-black mb-3">
-            {cycle?.stage === 'cycle_complete' ? '开始新一轮' : `启动${config.name}`}
+            {cycle?.stage === 'cycle_complete' ? t('workspace.restartTitle') : `${t('workspace.startTitle')}: ${configLabel}`}
           </h3>
           <textarea value={goalDraft} onChange={(e) => setGoalDraft(e.target.value)}
             placeholder={config.cyclePeriod === 'daily'
-              ? '例如：今天拍一条关于本地部署 AI 优势的短视频'
-              : '例如：这周围绕"本地AI员工"写 3 篇公众号 + 2 条小红书'}
+              ? t('workspace.goalPlaceholderDaily')
+              : t('workspace.goalPlaceholderWeekly')}
             rows={3}
             className="w-full resize-none rounded-xl border border-border-cream bg-ivory px-4 py-3 text-sm text-near-black outline-none focus:border-terracotta/40" />
           <div className="mt-3 flex items-center justify-between">
             <p className="text-xs text-stone-gray">
-              {config.cyclePeriod === 'daily' ? '日循环' : '周循环'} · {config.trigger.description}
+              {config.cyclePeriod === 'daily' ? t('workspace.daily') : t('workspace.weekly')}
             </p>
             <button type="button" disabled={!goalDraft.trim() || advancing}
               onClick={() => { onStartCycle(goalDraft.trim()); setGoalDraft(''); }}
               className="btn-terracotta text-sm disabled:opacity-40">
               {advancing
-                ? <><Loader2 size={14} className="animate-spin" /> 规划中…</>
-                : <><Sparkles size={14} /> 开始闭环</>}
+                ? <><Loader2 size={14} className="animate-spin" /> {t('workspace.planning')}</>
+                : <><Sparkles size={14} /> {t('workspace.start')}</>}
             </button>
           </div>
         </section>
 
         {history.length > 0 && (
           <section>
-            <h3 className="text-sm font-semibold text-near-black mb-3">历史循环</h3>
+            <h3 className="text-sm font-semibold text-near-black mb-3">{t('workspace.history')}</h3>
             <LoopHistoryTimeline history={history} />
           </section>
         )}
@@ -104,13 +107,15 @@ export default function LoopWorkspaceMain({
   // AI 自动阶段
   if (cycle.stage === 'planning' || cycle.stage === 'generating' || cycle.stage === 'reviewing_auto') {
     const labels: Record<string, string> = {
-      planning: '正在规划任务…', generating: '正在生成草稿…', reviewing_auto: '正在自动复盘…',
+      planning: t('stageLabel.planning'),
+      generating: t('stageLabel.generating'),
+      reviewing_auto: t('stageLabel.reviewing_auto'),
     };
     return (
       <div className="flex flex-col items-center justify-center gap-4 py-16">
         <Loader2 size={32} className="animate-spin text-terracotta" />
         <p className="text-sm font-medium text-near-black">{labels[cycle.stage]}</p>
-        <p className="text-xs text-olive-gray">AI 正在工作，完成后会自动通知你</p>
+        <p className="text-xs text-olive-gray">{t('workspace.aiWorking')}</p>
       </div>
     );
   }
@@ -121,7 +126,7 @@ export default function LoopWorkspaceMain({
       <section className="space-y-4">
         <div className="card-glass p-5">
           <h3 className="text-sm font-semibold text-near-black mb-3">
-            {config.cyclePeriod === 'daily' ? '今日' : '本周'}计划
+            {config.cyclePeriod === 'daily' ? t('workspace.planTitleDaily') : t('workspace.planTitleWeekly')}
           </h3>
           <p className="text-sm text-olive-gray">{cycle.plan.summary}</p>
           {cycle.plan.platforms.length > 0 && (
@@ -131,7 +136,7 @@ export default function LoopWorkspaceMain({
           )}
           {cycle.plan.keywords && cycle.plan.keywords.length > 0 && (
             <div className="mt-3">
-              <p className="text-label">目标关键词</p>
+              <p className="text-label">{t('workspace.keywords')}</p>
               <div className="mt-1 flex flex-wrap gap-1.5">
                 {cycle.plan.keywords.map((kw) => (
                   <span key={kw} className="rounded-full bg-warm-sand/60 px-2.5 py-0.5 text-xs text-olive-gray">{kw}</span>
@@ -140,7 +145,7 @@ export default function LoopWorkspaceMain({
             </div>
           )}
           <div className="mt-3">
-            <p className="text-label">任务列表（{cycle.tasks.length} 项）</p>
+            <p className="text-label">{t('workspace.tasks')} ({cycle.tasks.length})</p>
             <ul className="mt-2 space-y-1.5">
               {cycle.tasks.map((task, i) => (
                 <li key={task.id} className="flex items-center gap-2 text-sm text-near-black">
@@ -154,7 +159,7 @@ export default function LoopWorkspaceMain({
         <div className="flex gap-3">
           <button type="button" onClick={onConfirmPlan} className="btn-terracotta" disabled={advancing}>
             {advancing ? <Loader2 size={14} className="animate-spin" /> : <Check size={14} />}
-            确认计划，开始生成
+            {t('workspace.confirmPlan')}
           </button>
         </div>
       </section>
@@ -168,10 +173,10 @@ export default function LoopWorkspaceMain({
       <section className="space-y-4">
         <div className="flex items-center justify-between">
           <h3 className="text-sm font-semibold text-near-black">
-            审核草稿（{cycle.tasks.filter((t) => t.status === 'confirmed').length}/{cycle.tasks.length}）
+            {t('workspace.drafts')} ({cycle.tasks.filter((t) => t.status === 'confirmed').length}/{cycle.tasks.length})
           </h3>
           {!allReviewed && (
-            <button type="button" onClick={onConfirmAllDrafts} className="btn-ghost text-xs"><Check size={13} /> 全部确认</button>
+            <button type="button" onClick={onConfirmAllDrafts} className="btn-ghost text-xs"><Check size={13} /> {t('workspace.approveAll')}</button>
           )}
         </div>
         <div className="space-y-3">
@@ -185,7 +190,7 @@ export default function LoopWorkspaceMain({
         {allReviewed && (
           <button type="button" onClick={onAdvance} className="btn-terracotta" disabled={advancing}>
             {advancing ? <Loader2 size={14} className="animate-spin" /> : <ArrowRight size={14} />}
-            进入发布阶段
+            {t('workspace.publishTitle')}
           </button>
         )}
       </section>
@@ -198,8 +203,8 @@ export default function LoopWorkspaceMain({
     const allPublished = confirmedTasks.every((t) => t.publish?.published);
     return (
       <section className="space-y-4">
-        <h3 className="text-sm font-semibold text-near-black">发布内容</h3>
-        <p className="text-sm text-olive-gray">请将确认的内容复制到目标平台发布</p>
+        <h3 className="text-sm font-semibold text-near-black">{t('workspace.publishTitle')}</h3>
+        <p className="text-sm text-olive-gray">{t('workspace.publishHelp')}</p>
         <div className="space-y-3">
           {confirmedTasks.map((task) => (
             <div key={task.id} className="card-glass p-4">
@@ -216,14 +221,14 @@ export default function LoopWorkspaceMain({
                       setTimeout(() => setCopiedTaskId(null), 2000);
                     }}
                     className="btn-ghost text-xs">
-                    {copiedTaskId === task.id ? <><Check size={13} /> 已复制</> : <><Copy size={13} /> 复制</>}
+                    {copiedTaskId === task.id ? <><Check size={13} /> {t('workspace.copied')}</> : <><Copy size={13} /> {t('workspace.copy')}</>}
                   </button>
                   {!task.publish?.published && (
                     <button type="button" onClick={() => onMarkPublished(task.id, '')}
-                      className="btn-terracotta text-xs px-3 py-1.5"><Send size={13} /> 标记已发布</button>
+                      className="btn-terracotta text-xs px-3 py-1.5"><Send size={13} /> {t('workspace.markPublished')}</button>
                   )}
                   {task.publish?.published && (
-                    <span className="flex items-center gap-1 text-xs text-sage-green"><CheckCircle2 size={13} /> 已发布</span>
+                    <span className="flex items-center gap-1 text-xs text-sage-green"><CheckCircle2 size={13} /> {t('feedback.published')}</span>
                   )}
                 </div>
               </div>
@@ -232,12 +237,12 @@ export default function LoopWorkspaceMain({
         </div>
         <div className="flex gap-3">
           {!allPublished && (
-            <button type="button" onClick={onMarkAllPublished} className="btn-ghost text-xs"><Check size={13} /> 全部标记已发布</button>
+            <button type="button" onClick={onMarkAllPublished} className="btn-ghost text-xs"><Check size={13} /> {t('workspace.markAllPublished')}</button>
           )}
           {allPublished && (
             <button type="button" onClick={onAdvance} className="btn-terracotta" disabled={advancing}>
               {advancing ? <Loader2 size={14} className="animate-spin" /> : <ArrowRight size={14} />}
-              进入反馈阶段
+              {t('workspace.nextFeedback')}
             </button>
           )}
         </div>
@@ -250,8 +255,8 @@ export default function LoopWorkspaceMain({
     const hasFeedback = cycle.tasks.some((t) => t.feedback);
     return (
       <section className="space-y-4">
-        <h3 className="text-sm font-semibold text-near-black">等待效果反馈</h3>
-        <p className="text-sm text-olive-gray">发布后请截图或填写平台数据。右侧面板可以拖入截图或手动填写。</p>
+        <h3 className="text-sm font-semibold text-near-black">{t('workspace.feedbackTitle')}</h3>
+        <p className="text-sm text-olive-gray">{t('workspace.feedbackHelp')}</p>
         <div className="space-y-2">
           {cycle.tasks
             .filter((t) => t.status === 'confirmed' || t.status === 'published' || t.status === 'feedback_done')
@@ -259,7 +264,7 @@ export default function LoopWorkspaceMain({
               <div key={task.id} className="flex items-center justify-between rounded-xl border border-border-cream bg-ivory/70 px-4 py-3">
                 <span className="text-sm text-near-black">{task.draft?.title ?? task.appName}</span>
                 <span className={`text-xs ${task.feedback ? 'text-sage-green' : 'text-stone-gray'}`}>
-                  {task.feedback ? '已反馈' : '等待中'}
+                  {task.feedback ? t('workspace.feedbackReady') : t('workspace.feedbackWaiting')}
                 </span>
               </div>
             ))}
@@ -267,11 +272,11 @@ export default function LoopWorkspaceMain({
         {hasFeedback && (
           <button type="button" onClick={onSubmitAllFeedback} className="btn-terracotta" disabled={advancing}>
             {advancing ? <Loader2 size={14} className="animate-spin" /> : <ArrowRight size={14} />}
-            提交反馈，开始复盘
+            {t('workspace.submitFeedback')}
           </button>
         )}
         <button type="button" onClick={onSubmitAllFeedback} className="btn-ghost text-xs">
-          <RefreshCw size={13} /> 跳过反馈，直接复盘
+          <RefreshCw size={13} /> {t('workspace.skipFeedback')}
         </button>
       </section>
     );
@@ -282,10 +287,10 @@ export default function LoopWorkspaceMain({
     const pendingMemories = cycle.memoryCandidates.filter((mc) => mc.status === 'pending');
     return (
       <section className="space-y-4">
-        <h3 className="text-sm font-semibold text-near-black">确认经验记忆</h3>
+        <h3 className="text-sm font-semibold text-near-black">{t('workspace.memoryTitle')}</h3>
         {cycle.review && (
           <div className="card-glass p-4">
-            <p className="text-label">复盘总结</p>
+            <p className="text-label">{t('workspace.reviewSummary')}</p>
             <p className="mt-1 text-sm text-olive-gray">{cycle.review.summary}</p>
           </div>
         )}
@@ -293,9 +298,9 @@ export default function LoopWorkspaceMain({
         <div className="flex gap-3">
           <button type="button" onClick={onConfirmAllMemory} className="btn-terracotta" disabled={advancing}>
             {advancing ? <Loader2 size={14} className="animate-spin" /> : <Check size={14} />}
-            完成本轮
+            {t('workspace.finishCycle')}
           </button>
-          <button type="button" onClick={onAdvance} className="btn-ghost text-xs">跳过记忆确认</button>
+          <button type="button" onClick={onAdvance} className="btn-ghost text-xs">{t('workspace.skipMemory')}</button>
         </div>
       </section>
     );
@@ -304,7 +309,7 @@ export default function LoopWorkspaceMain({
   return (
     <div className="text-center text-sm text-stone-gray py-12">
       <Plus size={24} className="mx-auto text-stone-gray mb-2" />
-      <p>未知状态：{cycle.stage}</p>
+      <p>{t('workspace.unknown')}: {cycle.stage}</p>
     </div>
   );
 }

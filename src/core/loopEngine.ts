@@ -76,11 +76,12 @@ export async function advanceLoop(
         ownerContext: context.ownerContext,
         businessContext: context.businessContext,
         memories,
+        outputLanguage: context.outputLanguage,
         previousSuggestion,
       });
 
       const tasksWithCycleId = result.tasks.map((t) => ({ ...t, cycleId }));
-      store.updateCycle(cycleId, { plan: result.plan, tasks: tasksWithCycleId });
+      store.updateCycle(cycleId, { plan: result.plan, tasks: tasksWithCycleId, usedMemories: memories });
 
       const gate = getGate(config, 'awaiting_plan_review');
       const checkpoint: HumanCheckpoint = {
@@ -126,6 +127,7 @@ export async function advanceLoop(
             ownerContext: context.ownerContext,
             businessContext: context.businessContext,
             memories,
+            outputLanguage: context.outputLanguage,
           });
           store.updateTask(cycleId, task.id, { status: 'draft_ready', draft });
         } catch (error) {
@@ -235,6 +237,7 @@ export async function advanceLoop(
         ownerContext: context.ownerContext,
         businessContext: context.businessContext,
         memories,
+        outputLanguage: context.outputLanguage,
       });
 
       store.updateCycle(cycleId, {

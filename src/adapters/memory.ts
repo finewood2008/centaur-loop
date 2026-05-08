@@ -39,9 +39,19 @@ export async function searchAgentMemory(
   if (!query.trim()) return all.slice(-limit);
 
   const lower = query.toLowerCase();
-  return all
+  const matched = all
     .filter((m) => m.content.toLowerCase().includes(lower))
     .slice(-limit);
+  if (matched.length > 0) return matched;
+
+  return all.slice(-limit);
+}
+
+export async function listAgentMemories(agentId: string, limit: number = 20): Promise<MemoryEntry[]> {
+  return loadMemories()
+    .filter((m) => m.agentId === agentId)
+    .slice(-limit)
+    .reverse();
 }
 
 export async function storeAgentMemory(

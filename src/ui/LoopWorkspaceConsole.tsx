@@ -3,7 +3,7 @@
  */
 
 import { useCallback, useState } from 'react';
-import { ClipboardCheck } from 'lucide-react';
+import { Activity, ClipboardCheck, PlugZap } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import type { QuickFeedbackInput, SpiritBubblePayload } from '../core/types';
 import { useLoopStore } from '../core/loopStore';
@@ -11,16 +11,72 @@ import { advanceLoop } from '../core/loopEngine';
 import { submitQuickFeedback, processScreenshotFeedback } from '../core/feedbackCollector';
 import { ALL_LOOP_CONFIGS } from '../core/loopConfigs';
 import { useMediaQuery } from '../hooks/useMediaQuery';
+import { useI18n, getOutputLanguageInstruction } from '../i18n';
+import { RUNTIME_CONNECTORS, type RuntimeStatus } from '../adapters/runtime';
 import LoopProgressSidebar from './LoopProgressSidebar';
 import LoopWorkspaceMain from './LoopWorkspaceMain';
 import LoopFeedbackPanel from './LoopFeedbackPanel';
+
+interface LoopWorkspaceConsoleProps {
+  runtimeStatus: RuntimeStatus;
+}
 
 function noop(_bubble: SpiritBubblePayload) {
   // 气泡提醒暂不实现，后续接入 toast 系统
   console.log('[Loop Bubble]', _bubble.text);
 }
 
-export default function LoopWorkspaceConsole() {
+function RuntimeCard({ status }: { status: RuntimeStatus }) {
+  const { t } = useI18n();
+
+  return (
+    <section className="rounded-2xl border border-border-cream bg-ivory/70 p-4">
+      <div className="flex items-center justify-between gap-3">
+        <h3 className="flex items-center gap-2 text-sm font-semibold text-near-black">
+          <Activity size={15} className={status.mode === 'real' ? 'text-sage-green' : 'text-amber-warm'} />
+          {t('runtime.title')}
+        </h3>
+        <span className={`rounded-full px-2.5 py-0.5 text-xs ${
+          status.mode === 'real' ? 'bg-sage-green/15 text-sage-green' : 'bg-amber-warm/15 text-amber-warm'
+        }`}>
+          {status.mode === 'real' ? t('runtime.real') : t('runtime.demo')}
+        </span>
+      </div>
+      <p className="mt-2 text-xs leading-5 text-olive-gray">
+        {status.mode === 'real' ? t('runtime.available') : t('runtime.unavailable')}
+      </p>
+      <div className="mt-3 grid grid-cols-2 gap-2 text-xs">
+        <div className="rounded-xl bg-white/70 p-2">
+          <p className="text-stone-gray">{t('runtime.provider')}</p>
+          <p className="mt-1 font-medium text-near-black">{status.provider}</p>
+        </div>
+        <div className="rounded-xl bg-white/70 p-2">
+          <p className="text-stone-gray">{t('runtime.model')}</p>
+          <p className="mt-1 font-medium text-near-black">{status.model}</p>
+        </div>
+      </div>
+      <div className="mt-3 border-t border-border-cream pt-3">
+        <p className="mb-2 flex items-center gap-1.5 text-xs font-medium text-stone-gray">
+          <PlugZap size={13} /> {t('runtime.adapters')}
+        </p>
+        <div className="flex flex-wrap gap-1.5">
+          {RUNTIME_CONNECTORS.map((connector) => (
+            <span key={connector.id} className={`rounded-full px-2 py-0.5 text-[11px] ${
+              connector.status === 'available'
+                ? 'bg-sage-green/10 text-sage-green'
+                : 'bg-warm-sand/60 text-olive-gray'
+            }`}>
+              {connector.label}{connector.status === 'planned' ? ` · ${t('runtime.planned')}` : ''}
+            </span>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+export default function LoopWorkspaceConsole({ runtimeStatus }: LoopWorkspaceConsoleProps) {
+  const { t, locale } = useI18n();
   const isXl = useMediaQuery('(min-width: 1280px)');
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [advancing, setAdvancing] = useState(false);
@@ -35,6 +91,7 @@ export default function LoopWorkspaceConsole() {
     connected: true, // 独立版 demo 模式始终"已连接"
     ownerContext: '',
     businessContext: '',
+    outputLanguage: getOutputLanguageInstruction(locale),
     pushBubble: noop,
   };
 
@@ -202,13 +259,29 @@ export default function LoopWorkspaceConsole() {
         </main>
 
         {isXl && cycle && (
-          <LoopFeedbackPanel
-            cycle={cycle}
-            onSubmitQuickFeedback={handleSubmitQuickFeedback}
-            onSubmitScreenshot={handleSubmitScreenshot}
-            onConfirmMemory={handleConfirmMemory}
-            onRejectMemory={handleRejectMemory}
-          />
+          <aside className="sticky top-5 h-fit space-y-4">
+            <RuntimeCard status={runtimeStatus} />
+            <LoopFeedbackPanel
+              cycle={cycle}
+              onSubmitQuickFeedback={handleSubmitQuickFeedback}
+              onSubmitScreenshot={handleSubmitScreenshot}
+              onConfirmMemory={handleConfirmMemory}
+              onRejectMemory={handleRejectMemory}
+            />
+          </aside>
+        )}
+
+        {isXl && !cycle && (
+          <aside className="sticky top-5 h-fit space-y-4">
+            <RuntimeCard status={runtimeStatus} />
+            <LoopFeedbackPanel
+              cycle={null}
+              onSubmitQuickFeedback={handleSubmitQuickFeedback}
+              onSubmitScreenshot={handleSubmitScreenshot}
+              onConfirmMemory={handleConfirmMemory}
+              onRejectMemory={handleRejectMemory}
+            />
+          </aside>
         )}
       </div>
 
@@ -218,7 +291,7 @@ export default function LoopWorkspaceConsole() {
           <button type="button" onClick={() => setDrawerOpen((p) => !p)}
             className="fixed bottom-6 right-6 z-50 flex items-center gap-2 rounded-full border border-border-cream bg-parchment px-4 py-3 shadow-lg transition hover:bg-ivory">
             <ClipboardCheck size={18} className="text-terracotta" />
-            <span className="text-sm font-medium text-near-black">反馈</span>
+            <span className="text-sm font-medium text-near-black">{t('feedback.drawer')}</span>
             {pendingCount > 0 && (
               <span className="flex h-5 min-w-[20px] items-center justify-center rounded-full bg-terracotta px-1.5 text-xs font-medium text-ivory">
                 {pendingCount}
@@ -240,8 +313,8 @@ export default function LoopWorkspaceConsole() {
                 transition={{ type: 'spring', damping: 28, stiffness: 300 }}
                 className="fixed right-0 top-0 z-40 h-full w-[380px] max-w-[90vw] overflow-y-auto bg-parchment shadow-2xl">
                 <div className="flex items-center justify-between border-b border-border-cream bg-ivory/80 px-4 py-3">
-                  <span className="text-sm font-medium text-near-black">反馈与记忆</span>
-                  <button type="button" onClick={() => setDrawerOpen(false)} className="btn-ghost px-2 py-1 text-xs">关闭</button>
+                  <span className="text-sm font-medium text-near-black">{t('feedback.title')}</span>
+                  <button type="button" onClick={() => setDrawerOpen(false)} className="btn-ghost px-2 py-1 text-xs">{t('feedback.close')}</button>
                 </div>
                 <div className="p-0">
                   <LoopFeedbackPanel
