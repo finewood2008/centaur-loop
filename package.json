@@ -1,0 +1,47 @@
+{
+  "name": "centaur-loop",
+  "version": "0.1.0",
+  "description": "The feedback-loop runtime for human-governed AI agents.",
+  "type": "module",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/finewood2008/centaur-loop.git"
+  },
+  "bugs": {
+    "url": "https://github.com/finewood2008/centaur-loop/issues"
+  },
+  "homepage": "https://github.com/finewood2008/centaur-loop#readme",
+  "keywords": [
+    "ai-agents",
+    "human-in-the-loop",
+    "feedback-loop",
+    "workflow",
+    "agent-runtime",
+    "typescript",
+    "react"
+  ],
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "framer-motion": "^11.18.0",
+    "lucide-react": "^0.468.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "zustand": "^5.0.2"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.18",
+    "@types/react-dom": "^18.3.5",
+    "@vitejs/plugin-react": "^4.3.4",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.49",
+    "tailwindcss": "^3.4.17",
+    "typescript": "~5.6.2",
+    "vite": "^6.0.5"
+  }
+}

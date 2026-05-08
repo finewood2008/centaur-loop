@@ -1,0 +1,51 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Centaur Loop Engine 设计系统 ── */
+
+@layer components {
+  /* 玻璃卡片 */
+  .card-glass {
+    @apply rounded-2xl border border-border-cream bg-white/70 backdrop-blur-sm;
+  }
+  .card-glass-warm {
+    @apply rounded-2xl border border-border-cream bg-warm-sand/20 backdrop-blur-sm;
+  }
+
+  /* 按钮 */
+  .btn-terracotta {
+    @apply inline-flex items-center gap-2 rounded-xl bg-terracotta px-4 py-2.5
+           font-medium text-white transition
+           hover:bg-terracotta/90 active:scale-[0.98]
+           disabled:cursor-not-allowed disabled:opacity-50;
+  }
+  .btn-ghost {
+    @apply inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5
+           text-sm text-olive-gray transition
+           hover:bg-warm-sand/50 active:scale-[0.98];
+  }
+
+  /* 徽章 */
+  .badge {
+    @apply inline-flex items-center gap-1 rounded-full bg-warm-sand/60 px-2.5 py-0.5
+           text-xs font-medium text-olive-gray;
+  }
+  .badge-success {
+    @apply bg-sage-green/15 text-sage-green;
+  }
+
+  /* 标签 */
+  .text-overline {
+    @apply text-[11px] font-semibold uppercase tracking-wider text-stone-gray;
+  }
+  .text-label {
+    @apply text-xs font-medium text-stone-gray;
+  }
+  .heading-card {
+    @apply font-serif text-lg font-semibold text-near-black;
+  }
+  .page-title {
+    @apply font-serif text-2xl font-bold text-near-black;
+  }
+}
