@@ -67,11 +67,11 @@ Create a single-page marketing homepage with these sections:
      - `loopChat.ts`: maps runtime state to chat messages, cards, and user actions.
      - `adapters/*`: OpenAI-compatible model access, tool registry, and memory boundaries.
 
-6. **Starter loops / use cases**
+6. **MVP focus / use cases**
    - Cards:
-     - `SEO / GEO Growth Loop` with WeChat articles, Xiaohongshu notes, SEO and GEO content.
-     - `Short-Video Production Loop` with topic confirmation, script review, outcome feedback.
-     - `Agent Runtime Integrations` with LangGraph, Mastra, Temporal, Inngest, and n8n-style approvals.
+     - `Content Growth Loop` with WeChat articles, Xiaohongshu notes, SEO and GEO content.
+     - `Runtime Connector Layer` with OpenAI-compatible endpoints, Ollama, LM Studio, vLLM, and llama.cpp.
+     - `Agent Runtime Integrations` with LangGraph, Mastra, Temporal, Inngest, and n8n-style approvals as roadmap items.
 
 7. **Positioning comparison**
    - Table comparing:
