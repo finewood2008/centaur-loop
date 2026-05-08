@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Technical design
+    url: https://github.com/finewood2008/centaur-loop/blob/main/CENTAUR_LOOP_TECHNICAL_DOC_EN.md
+    about: Read the current architecture and product definition before proposing large changes.

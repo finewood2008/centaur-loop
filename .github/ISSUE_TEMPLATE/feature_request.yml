@@ -1,0 +1,39 @@
+name: Feature request
+description: Propose a capability, adapter, or product change.
+title: "feat: "
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What user or developer problem should this solve?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposal
+      description: What should Centaur Loop do differently?
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Core state machine
+        - Human gates
+        - Runtime connector
+        - Memory
+        - Feedback collection
+        - UI workbench
+        - Documentation
+        - Integration example
+    validations:
+      required: true
+  - type: textarea
+    id: tradeoffs
+    attributes:
+      label: Tradeoffs and constraints
+      description: What should we avoid breaking or overcomplicating?

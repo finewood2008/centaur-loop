@@ -11,13 +11,16 @@
   "bugs": {
     "url": "https://github.com/finewood2008/centaur-loop/issues"
   },
-  "homepage": "https://github.com/finewood2008/centaur-loop#readme",
+  "homepage": "https://www.centaurloop.com",
   "keywords": [
     "ai-agents",
     "human-in-the-loop",
     "feedback-loop",
     "workflow",
     "agent-runtime",
+    "human-gates",
+    "agent-memory",
+    "openai-compatible",
     "typescript",
     "react"
   ],

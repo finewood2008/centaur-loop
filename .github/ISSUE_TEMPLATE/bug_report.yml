@@ -1,0 +1,59 @@
+name: Bug report
+description: Report a reproducible Centaur Loop issue.
+title: "bug: "
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting a bug. Please keep the report focused and reproducible.
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: What went wrong?
+      placeholder: The loop gets stuck at awaiting_feedback after...
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Reproduction steps
+      description: Include the exact flow, runtime mode, and relevant inputs.
+      placeholder: |
+        1. Start the app with npm run dev
+        2. Select local-demo
+        3. Start a content growth loop with...
+    validations:
+      required: true
+  - type: dropdown
+    id: runtime
+    attributes:
+      label: Runtime
+      options:
+        - local-demo
+        - OpenAI-compatible env
+        - Ollama
+        - LM Studio
+        - vLLM
+        - llama.cpp
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Commit or version
+      placeholder: main @ abc1234
