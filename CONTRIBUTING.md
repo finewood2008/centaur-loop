@@ -1,5 +1,7 @@
 # Contributing
 
+English | [简体中文](./CONTRIBUTING.zh-CN.md)
+
 Centaur Loop is early, so the most useful contributions are focused and concrete.
 
 Good first areas:
@@ -26,4 +28,3 @@ npm run build
 - Keep feedback and review native to the loop.
 - Avoid writing low-quality memories automatically.
 - Prefer small, composable adapters over platform lock-in.
-

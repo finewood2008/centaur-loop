@@ -1,5 +1,7 @@
 # Centaur Loop（半人马闭环）技术设计说明
 
+[English](./CENTAUR_LOOP_TECHNICAL_DOC_EN.md) | 简体中文
+
 > 版本：v0.2.0  
 > 最后更新：2026-05-09  
 > 项目位置：`centaur-loop-engine/`

@@ -1,5 +1,7 @@
 # Centaur Loop
 
+English | [简体中文](./README.zh-CN.md)
+
 **The feedback-loop runtime for human-governed AI agents.**
 
 Centaur Loop helps you build agents that plan, pause for human judgment, execute, collect real-world feedback, review outcomes, remember what worked, and improve the next cycle.
@@ -80,9 +82,13 @@ Near-term direction:
 
 ## Design Document
 
-The technical design is in [CENTAUR_LOOP_TECHNICAL_DOC.md](./CENTAUR_LOOP_TECHNICAL_DOC.md).
+- [Technical Design](./CENTAUR_LOOP_TECHNICAL_DOC_EN.md)
+- [技术设计说明](./CENTAUR_LOOP_TECHNICAL_DOC.md)
+
+## Contributing
+
+See [CONTRIBUTING.md](./CONTRIBUTING.md). Chinese version: [CONTRIBUTING.zh-CN.md](./CONTRIBUTING.zh-CN.md).
 
 ## License
 
 MIT
-
