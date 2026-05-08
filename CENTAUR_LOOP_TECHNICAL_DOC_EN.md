@@ -235,7 +235,7 @@ The planner, executor, and reviewer all consume relevant memories through `searc
 
 Each loop config describes ownership, trigger, available AI tools, human gates, feedback methods, memory categories, and cycle period.
 
-Implemented templates:
+Implemented template:
 
 ### SEO/GEO Growth Loop
 
@@ -243,14 +243,6 @@ Implemented templates:
 - AI recommends a weekly growth plan.
 - Tools: WeChat article, Xiaohongshu note, SEO long article, GEO optimization.
 - Human gates: plan review, draft review, publishing, feedback, memory confirmation.
-
-### Short-Video Production Loop
-
-- Daily cycle.
-- AI recommends today's topic.
-- Tool: short-video script generator.
-- Human gates: topic confirmation, script confirmation, shoot/publish, feedback, memory confirmation.
-- Supports the fast-loop / slow-loop idea through `hasFastLoop` and `hasSlowLoop`.
 
 ## 8. AI Tool Registry
 
@@ -272,7 +264,6 @@ Current tools:
 - WeChat article generator
 - Xiaohongshu note generator
 - SEO article writer
-- Short-video script generator
 - GEO content optimizer
 
 The planner reads tool definitions and lets the model choose tools and input parameters for the cycle tasks.
@@ -294,14 +285,11 @@ CentaurLoopConfig
      -> nextSuggestion
 ```
 
-## 10. Fast and Slow Loops
+## 10. Loop Template Expansion
 
-The short-video loop introduces two rhythms:
+The MVP intentionally keeps one runnable loop: content growth. That single loop proves the core Centaur Loop pattern: planning, human gates, publishing, feedback, review, confirmed memory, and next-cycle improvement.
 
-- **Fast loop**: daily execution around a single video.
-- **Slow loop**: weekly strategy review across multiple fast loops.
-
-Fast-loop memory feeds slow-loop strategy, and slow-loop strategy guides future fast-loop topics. The current implementation includes flags for this design; full orchestration is planned.
+Future templates can cover lead follow-up, support quality, research workflows, product feedback, or multi-period content operations. Multi-period orchestration remains a future direction, where daily execution loops can feed weekly or monthly strategy loops.
 
 ## 11. Hub OS Integration Points
 
@@ -337,4 +325,3 @@ The prototype was designed to integrate with Hub OS through:
 - Add A/B testing loops.
 - Support selective memory sharing across loops.
 - Deepen Hub OS integration.
-

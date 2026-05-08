@@ -57,9 +57,8 @@ planning
 - Real-model-first OpenAI-compatible runtime with demo fallback.
 - Demo AI client with mock planning, drafting, screenshot parsing, and review output.
 - Runtime connector registry showing available and planned adapters.
-- Two starter loop templates:
-  - SEO/GEO growth loop
-  - Short-video production loop
+- One focused MVP loop template:
+  - Content growth loop for SEO/GEO visibility
 
 ## Quick Start
 

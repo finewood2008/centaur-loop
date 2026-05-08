@@ -102,9 +102,10 @@ function buildPlanMessage(cycle: LoopCycle, config: CentaurLoopConfig, locale: L
     ? locale === 'zh-CN' ? `\n平台：${plan.platforms.join('、')}` : `\nPlatforms: ${plan.platforms.join(', ')}`
     : '';
 
+  void config;
   const text = locale === 'zh-CN'
-    ? `📋 ${config.cyclePeriod === 'daily' ? '今日' : '本周'}计划已出：\n\n${plan.summary}${platformStr}${keywordStr}\n\n${taskList}\n\n确认这个计划吗？或者告诉我要怎么调整。`
-    : `📋 The ${config.cyclePeriod === 'daily' ? 'daily' : 'weekly'} plan is ready:\n\n${plan.summary}${platformStr}${keywordStr}\n\n${taskList}\n\nApprove this plan, or tell me what to change.`;
+    ? `📋 本周内容增长计划已出：\n\n${plan.summary}${platformStr}${keywordStr}\n\n${taskList}\n\n确认这个计划吗？或者告诉我要怎么调整。`
+    : `📋 The content growth plan is ready:\n\n${plan.summary}${platformStr}${keywordStr}\n\n${taskList}\n\nApprove this plan, or tell me what to change.`;
 
   const actions: QuickAction[] = [
     { id: 'confirm', label: locale === 'zh-CN' ? '确认，开始生成' : 'Approve and generate', variant: 'primary', action: { type: 'confirm' } },
@@ -185,10 +186,10 @@ function buildPublishMessage(cycle: LoopCycle, locale: Locale): LoopMessage[] {
 }
 
 function buildFeedbackRequest(cycle: LoopCycle, config: CentaurLoopConfig, locale: Locale): LoopMessage[] {
+  void cycle;
+  void config;
   const text = locale === 'zh-CN'
-    ? config.cyclePeriod === 'daily'
-      ? '📊 视频发了多久了？有数据了的话告诉我播放量、点赞这些。也可以直接截图给我。'
-      : '📊 内容发布后表现怎么样？可以直接说数据（比如"公众号800阅读56赞"），或者截个图。'
+    ? '📊 内容发布后表现怎么样？可以直接说数据（比如"公众号800阅读56赞"），或者截个图。'
     : '📊 How did it perform after publishing? Send metrics like "1200 views 68 likes", or paste the result manually.';
 
   return [aiMsg(text, 'feedback_request', {
@@ -293,23 +294,21 @@ export class LoopChatController {
       messages: [
         aiMsg(
           locale === 'zh-CN'
-            ? `👋 我是你的${getLoopConfigLabel(config.id, locale)}助手。\n\n${getLoopConfigDescription(config.id, locale)}\n\n告诉我${config.cyclePeriod === 'daily' ? '今天' : '这周'}的目标，我来帮你启动闭环。`
-            : `👋 I am your ${getLoopConfigLabel(config.id, locale)} assistant.\n\n${getLoopConfigDescription(config.id, locale)}\n\nTell me the goal for this ${config.cyclePeriod === 'daily' ? 'day' : 'week'}, and I will start the loop.`,
+            ? `👋 我是你的${getLoopConfigLabel(config.id, locale)}助手。\n\n${getLoopConfigDescription(config.id, locale)}\n\n告诉我这周的内容增长目标，我来帮你启动闭环。`
+            : `👋 I am your ${getLoopConfigLabel(config.id, locale)} assistant.\n\n${getLoopConfigDescription(config.id, locale)}\n\nTell me the content growth goal for this week, and I will start the loop.`,
           'text',
           {
             actions: [
               {
                 id: 'start-seo',
-                label: locale === 'zh-CN'
-                  ? config.cyclePeriod === 'daily' ? '帮我做今日选题' : '帮我做本周增长'
-                  : config.cyclePeriod === 'daily' ? 'Plan today\'s topic' : 'Plan this week\'s growth loop',
+                label: locale === 'zh-CN' ? '帮我做本周增长' : 'Plan this week\'s growth loop',
                 variant: 'primary',
                 action: {
                   type: 'start_loop',
                   payload: {
                     goal: locale === 'zh-CN'
-                      ? config.cyclePeriod === 'daily' ? '今天帮我出一条有策略的短视频' : '这周帮我做一轮SEO增长'
-                      : config.cyclePeriod === 'daily' ? 'Plan one strategic short video for today' : 'Run a content growth loop about AI agent feedback loops this week',
+                      ? '这周帮我做一轮 SEO/GEO 内容增长'
+                      : 'Run a content growth loop about AI agent feedback loops this week',
                   },
                 },
               },

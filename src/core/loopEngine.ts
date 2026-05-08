@@ -89,7 +89,7 @@ export async function advanceLoop(
         cycleId,
         gateId: gate?.id ?? 'confirm-plan',
         type: 'plan_review',
-        title: `确认${config.cyclePeriod === 'daily' ? '今日' : '本周'}计划`,
+        title: '确认本周内容增长计划',
         detail: result.plan.summary,
         status: 'waiting',
         createdAt: new Date().toISOString(),

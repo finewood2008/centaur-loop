@@ -104,7 +104,7 @@ function MemoryShelf({ employeeId }: { employeeId: string }) {
 
 export default function LoopConversationWorkbench({ runtime }: LoopConversationWorkbenchProps) {
   const { t, locale } = useI18n();
-  const [activeConfigId, setActiveConfigId] = useState(ALL_LOOP_CONFIGS[0]?.id ?? '');
+  const activeConfigId = ALL_LOOP_CONFIGS[0]?.id ?? '';
   const [session, setSession] = useState<LoopChatSession | null>(null);
   const [inputText, setInputText] = useState('');
   const [sending, setSending] = useState(false);
@@ -171,20 +171,9 @@ export default function LoopConversationWorkbench({ runtime }: LoopConversationW
             <h2 className="mt-1 text-base font-semibold text-near-black">{t('chat.subtitle')}</h2>
           </div>
           <div className="flex flex-wrap items-center gap-2">
-            {ALL_LOOP_CONFIGS.map((candidate) => (
-              <button
-                key={candidate.id}
-                type="button"
-                onClick={() => setActiveConfigId(candidate.id)}
-                className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs transition ${
-                  activeConfigId === candidate.id
-                    ? 'bg-terracotta/10 text-terracotta font-medium'
-                    : 'text-olive-gray hover:bg-warm-sand/50'
-                }`}
-              >
-                <span>{candidate.icon}</span> {getLoopConfigLabel(candidate.id, locale)}
-              </button>
-            ))}
+            <span className="flex items-center gap-1.5 rounded-lg bg-terracotta/10 px-3 py-1.5 text-xs font-medium text-terracotta">
+              <span>{config.icon}</span> {getLoopConfigLabel(config.id, locale)}
+            </span>
             <button type="button" onClick={handleReset} className="btn-ghost text-xs" title={t('chat.reset')}>
               <RotateCcw size={13} /> {t('chat.reset')}
             </button>

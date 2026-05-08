@@ -66,47 +66,6 @@ function createDemoClient(): AIClient {
 function generateDemoPlanResponse(prompt: string): string {
   const english = wantsEnglish(prompt);
   const isSEO = prompt.includes('SEO') || prompt.includes('seo');
-  const isVideo = prompt.includes('短视频') || prompt.includes('video');
-
-  if (isVideo) {
-    if (english) {
-      return JSON.stringify({
-        summary: 'Today\'s topic: show how a human-governed AI feedback loop turns one short-video idea into a reusable growth lesson.',
-        platforms: ['TikTok', 'YouTube Shorts'],
-        keywords: ['AI agents', 'feedback loops', 'human-in-the-loop'],
-        tasks: [
-          {
-            appToolId: 'short-video-script-generator',
-            appName: 'Short-video script',
-            artifactType: 'video_script',
-            inputParams: {
-              topic: 'A 60-second explainer for Centaur Loop',
-              style: 'product demo',
-              duration: '60 seconds',
-            },
-          },
-        ],
-      });
-    }
-
-    return JSON.stringify({
-      summary: '今日选题：用手机演示如何3分钟部署一个本地AI员工，突出"不用写代码"的卖点',
-      platforms: ['抖音', '视频号'],
-      keywords: ['本地AI', '不用写代码', 'AI员工'],
-      tasks: [
-        {
-          appToolId: 'short-video-script-generator',
-          appName: '短视频脚本生成',
-          artifactType: 'video_script',
-          inputParams: {
-            topic: '3分钟部署本地AI员工',
-            style: '教程演示',
-            duration: '60秒',
-          },
-        },
-      ],
-    });
-  }
 
   if (isSEO) {
     if (english) {
@@ -216,57 +175,6 @@ function generateDemoPlanResponse(prompt: string): string {
 
 function generateDemoContentResponse(prompt: string): string {
   const english = wantsEnglish(prompt);
-  const isVideo = prompt.includes('视频') || prompt.includes('脚本');
-  if (isVideo) {
-    if (english) {
-      return `# Centaur Loop in 60 Seconds — Short-Video Script
-
-## Hook (0-5s)
-[Shot] Screen recording of a loop dashboard.
-[Voiceover] "Most agents can run on a schedule. But do they learn after the work goes live?"
-
-## Problem (5-20s)
-[Shot] Show a one-shot AI result fading out.
-[Voiceover] "A cron job wakes an agent up. A workflow moves it through steps. Neither guarantees that real-world feedback improves the next run."
-
-## Loop (20-45s)
-[Shot] Highlight Plan, Human Gate, Feedback, Review, Memory.
-[Voiceover] "Centaur Loop adds the missing operating layer: humans approve critical decisions, results come back, the agent reviews performance, and only approved lessons become memory."
-
-## Close (45-60s)
-[Shot] Start a second cycle with prior memory visible.
-[Voiceover] "The next cycle starts smarter. That is the difference between automation and improvement."
-
----
-Tags: #AIAgents #HumanInTheLoop #OpenSource`;
-    }
-
-    return `# 3分钟部署本地AI员工 — 拍摄脚本
-
-## 开场（0-5秒）
-【镜头】手持手机，对着电脑屏幕
-【台词】"你相信吗？不用写一行代码，3分钟就能拥有一个AI员工。"
-
-## 第一步：安装（5-20秒）
-【镜头】屏幕录制，下载安装过程
-【台词】"打开官网，下载安装包，双击安装。就像装微信一样简单。"
-
-## 第二步：配置（20-40秒）
-【镜头】屏幕录制，填写基本信息
-【台词】"填入你的企业名称、行业、主要业务。AI员工需要了解你的公司。"
-
-## 第三步：开始工作（40-55秒）
-【镜头】屏幕录制，AI生成内容
-【台词】"点击'开始闭环'，看，AI已经在为你规划本周的内容营销方案了。"
-
-## 结尾（55-60秒）
-【镜头】面对镜头
-【台词】"本地部署，数据安全。想试试的点链接。"
-
----
-**标签**: #AI员工 #本地部署 #不用写代码 #创业工具
-**发布时间建议**: 工作日 12:00-13:00`;
-  }
 
   if (english) {
     return `# Why AI Agents Need Feedback Loops, Not Just Cron Jobs

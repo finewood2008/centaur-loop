@@ -16,9 +16,10 @@ export interface RuntimeConnector {
   provider: string;
   endpoint?: string;
   model: string;
+  models?: string[];
   configured: boolean;
   available: boolean;
-  kind: 'demo' | 'openai-compatible' | 'ollama';
+  kind: 'demo' | 'openai-compatible' | 'ollama' | 'planned';
   message: string;
 }
 
@@ -81,6 +82,28 @@ export async function scanRuntimeConnectors(): Promise<RuntimeScanResult> {
       selectedRuntimeId: 'local-demo',
     };
   }
+}
+
+export async function connectRuntime(runtimeId: string): Promise<{ connector: RuntimeConnector; status: RuntimeStatus }> {
+  const response = await fetch('/api/runtime/connect', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json', accept: 'application/json' },
+    body: JSON.stringify({ runtimeId }),
+  });
+  const payload = await response.json().catch(() => null) as {
+    connector?: RuntimeConnector;
+    status?: RuntimeStatus;
+    error?: string;
+  } | null;
+
+  if (!response.ok) {
+    const message = payload?.status?.message ?? payload?.error ?? `Runtime connect failed: ${response.status}`;
+    throw new Error(message);
+  }
+  if (!payload?.connector || !payload.status) {
+    throw new Error('Runtime connect returned an invalid response.');
+  }
+  return { connector: payload.connector, status: payload.status };
 }
 
 function readSelectedRuntimeId(): string | undefined {

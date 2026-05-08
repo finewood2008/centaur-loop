@@ -75,14 +75,12 @@ export default function LoopWorkspaceMain({
             {cycle?.stage === 'cycle_complete' ? t('workspace.restartTitle') : `${t('workspace.startTitle')}: ${configLabel}`}
           </h3>
           <textarea value={goalDraft} onChange={(e) => setGoalDraft(e.target.value)}
-            placeholder={config.cyclePeriod === 'daily'
-              ? t('workspace.goalPlaceholderDaily')
-              : t('workspace.goalPlaceholderWeekly')}
+            placeholder={t('workspace.goalPlaceholderWeekly')}
             rows={3}
             className="w-full resize-none rounded-xl border border-border-cream bg-ivory px-4 py-3 text-sm text-near-black outline-none focus:border-terracotta/40" />
           <div className="mt-3 flex items-center justify-between">
             <p className="text-xs text-stone-gray">
-              {config.cyclePeriod === 'daily' ? t('workspace.daily') : t('workspace.weekly')}
+              {t('workspace.weekly')}
             </p>
             <button type="button" disabled={!goalDraft.trim() || advancing}
               onClick={() => { onStartCycle(goalDraft.trim()); setGoalDraft(''); }}
@@ -126,7 +124,7 @@ export default function LoopWorkspaceMain({
       <section className="space-y-4">
         <div className="card-glass p-5">
           <h3 className="text-sm font-semibold text-near-black mb-3">
-            {config.cyclePeriod === 'daily' ? t('workspace.planTitleDaily') : t('workspace.planTitleWeekly')}
+            {t('workspace.planTitleWeekly')}
           </h3>
           <p className="text-sm text-olive-gray">{cycle.plan.summary}</p>
           {cycle.plan.platforms.length > 0 && (

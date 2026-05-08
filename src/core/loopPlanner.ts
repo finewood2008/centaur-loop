@@ -3,7 +3,7 @@
  */
 
 import { getClientAsync, extractModelText } from '../adapters/ai-client';
-import { findTool, TOOL_CATALOG } from '../adapters/tool-registry';
+import { findTool } from '../adapters/tool-registry';
 import type {
   CentaurLoopConfig,
   LoopCyclePlan,
@@ -79,7 +79,7 @@ function buildPlanPrompt(
 }
 
 const VALID_ARTIFACT_TYPES = new Set([
-  'article', 'social_post', 'video_script',
+  'article', 'social_post',
   'seo_article', 'geo_content', 'content_plan', 'review_report',
 ]);
 

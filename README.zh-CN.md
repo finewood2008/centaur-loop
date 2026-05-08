@@ -57,9 +57,8 @@ planning
 - 真实模型优先的 OpenAI-compatible runtime，并支持 demo fallback。
 - Demo AI client，包含模拟规划、生成、截图解析和复盘输出。
 - Runtime connector registry，用于展示已支持和计划中的 adapter。
-- 两个初始闭环模板：
-  - SEO/GEO 增长闭环
-  - 短视频生产闭环
+- 一个聚焦的 MVP 闭环模板：
+  - 面向 SEO/GEO 可见度的内容增长闭环
 
 ## 快速开始
 

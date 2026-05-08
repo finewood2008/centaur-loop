@@ -33,9 +33,7 @@ const dictionaries = {
     'memory.used': 'Prior memory is being injected into this cycle.',
     'memory.notUsed': 'No prior memory has been used yet.',
     'loop.contentGrowth': 'Content Growth Loop',
-    'loop.videoProduction': 'Short Video Loop',
     'loop.contentGrowth.description': 'Grow search and AI-answer visibility through planned content, feedback, review, and memory.',
-    'loop.videoProduction.description': 'Produce daily short-video scripts and improve topics through feedback.',
     'stage.planning': 'Planning',
     'stage.awaiting_plan_review': 'Plan review',
     'stage.generating': 'Generating',
@@ -57,14 +55,11 @@ const dictionaries = {
     'workspace.startTitle': 'Start the content growth loop',
     'workspace.restartTitle': 'Start a new cycle',
     'workspace.goalPlaceholderWeekly': 'Example: produce 3 posts this week around "AI agent feedback loops"',
-    'workspace.goalPlaceholderDaily': 'Example: create a short video about AI feedback loops today',
     'workspace.weekly': 'Weekly loop',
-    'workspace.daily': 'Daily loop',
     'workspace.start': 'Start loop',
     'workspace.planning': 'Planning...',
     'workspace.aiWorking': 'AI is working. It will stop at the next human gate.',
     'workspace.planTitleWeekly': 'This week\'s plan',
-    'workspace.planTitleDaily': 'Today\'s plan',
     'workspace.platforms': 'Platforms',
     'workspace.keywords': 'Keywords',
     'workspace.tasks': 'Tasks',
@@ -149,7 +144,6 @@ const dictionaries = {
     'screenshot.paste': 'Supports paste from clipboard',
     'artifact.article': 'Article',
     'artifact.social_post': 'Social post',
-    'artifact.video_script': 'Video script',
     'artifact.seo_article': 'SEO article',
     'artifact.geo_content': 'GEO content',
     'artifact.content_plan': 'Content plan',
@@ -184,9 +178,7 @@ const dictionaries = {
     'memory.used': '本轮正在注入历史记忆。',
     'memory.notUsed': '本轮还未使用历史记忆。',
     'loop.contentGrowth': '内容增长闭环',
-    'loop.videoProduction': '短视频闭环',
     'loop.contentGrowth.description': '通过计划、内容、反馈、复盘和记忆持续提升搜索与 AI 回答可见度。',
-    'loop.videoProduction.description': '每天产出短视频脚本，并用反馈持续优化选题。',
     'stage.planning': '规划',
     'stage.awaiting_plan_review': '确认计划',
     'stage.generating': '生成',
@@ -208,14 +200,11 @@ const dictionaries = {
     'workspace.startTitle': '启动内容增长闭环',
     'workspace.restartTitle': '开始新一轮',
     'workspace.goalPlaceholderWeekly': '例如：这周围绕“AI Agent 反馈闭环”生产 3 篇内容',
-    'workspace.goalPlaceholderDaily': '例如：今天做一条关于 AI 反馈闭环的短视频',
     'workspace.weekly': '周循环',
-    'workspace.daily': '日循环',
     'workspace.start': '开始闭环',
     'workspace.planning': '规划中…',
     'workspace.aiWorking': 'AI 正在工作，完成后会停在下一个人工卡点。',
     'workspace.planTitleWeekly': '本周计划',
-    'workspace.planTitleDaily': '今日计划',
     'workspace.platforms': '平台',
     'workspace.keywords': '关键词',
     'workspace.tasks': '任务列表',
@@ -300,7 +289,6 @@ const dictionaries = {
     'screenshot.paste': '支持 Ctrl+V 粘贴',
     'artifact.article': '公众号',
     'artifact.social_post': '社交帖',
-    'artifact.video_script': '视频脚本',
     'artifact.seo_article': 'SEO 文章',
     'artifact.geo_content': 'GEO 内容',
     'artifact.content_plan': '内容计划',
@@ -354,12 +342,12 @@ export function useI18n(): I18nContextValue {
 }
 
 export function getLoopConfigLabel(configId: string, locale: Locale): string {
-  if (configId === 'video-production') return dictionaries[locale]['loop.videoProduction'];
+  void configId;
   return dictionaries[locale]['loop.contentGrowth'];
 }
 
 export function getLoopConfigDescription(configId: string, locale: Locale): string {
-  if (configId === 'video-production') return dictionaries[locale]['loop.videoProduction.description'];
+  void configId;
   return dictionaries[locale]['loop.contentGrowth.description'];
 }
 

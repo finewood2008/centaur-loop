@@ -49,7 +49,7 @@ export interface HumanGateConfig {
 }
 
 export type ArtifactType =
-  | 'article' | 'social_post' | 'video_script'
+  | 'article' | 'social_post'
   | 'seo_article' | 'geo_content' | 'content_plan' | 'review_report';
 
 export type FeedbackMethod = 'quick_form' | 'chat_followup' | 'screenshot_ocr' | 'browser_clip';
@@ -67,8 +67,6 @@ export interface CentaurLoopConfig {
   feedbackMethods: FeedbackMethod[];
   memoryCategories: string[];
   cyclePeriod: 'daily' | 'weekly' | 'biweekly';
-  hasFastLoop?: boolean;
-  hasSlowLoop?: boolean;
 }
 
 // ─── 循环任务 ─────────────────────────────────────────────────

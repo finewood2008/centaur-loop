@@ -32,7 +32,6 @@ function AppShell() {
           </div>
 
           <div className="flex flex-wrap items-center gap-2">
-            <RuntimeDropdown runtime={runtime} />
             <a href="https://github.com/finewood2008/centaur-loop" target="_blank" rel="noreferrer" className="btn-ghost">
               <Github size={15} /> {t('app.github')}
             </a>
@@ -46,6 +45,7 @@ function AppShell() {
         </div>
       </header>
       <LoopConversationWorkbench runtime={runtime} />
+      <RuntimeDropdown runtime={runtime} floating />
     </div>
   );
 }

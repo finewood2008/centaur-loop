@@ -1,9 +1,14 @@
 import { useEffect, useRef, useState } from 'react';
-import { Check, ChevronDown, Cpu, RefreshCw } from 'lucide-react';
+import { Check, ChevronDown, Cpu, Loader2, RefreshCw } from 'lucide-react';
 import { useI18n } from '../i18n';
 import type { RuntimeState } from '../hooks/useRuntimeStatus';
 
-export default function RuntimeDropdown({ runtime }: { runtime: RuntimeState }) {
+interface RuntimeDropdownProps {
+  runtime: RuntimeState;
+  floating?: boolean;
+}
+
+export default function RuntimeDropdown({ runtime, floating = false }: RuntimeDropdownProps) {
   const { t } = useI18n();
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -17,14 +22,14 @@ export default function RuntimeDropdown({ runtime }: { runtime: RuntimeState }) 
   }, []);
 
   return (
-    <div ref={ref} className="relative">
+    <div ref={ref} className={floating ? 'fixed bottom-4 right-4 z-[1000]' : 'relative'}>
       <button
         type="button"
         onClick={() => setOpen((current) => !current)}
-        className={`inline-flex items-center gap-2 rounded-full border px-3 py-2 text-xs shadow-sm transition ${
+        className={`inline-flex items-center gap-2 rounded-full border px-3 py-2 text-xs shadow-lg backdrop-blur-md transition ${
           runtime.mode === 'real'
             ? 'border-sage-green/30 bg-sage-green/10 text-sage-green'
-            : 'border-border-cream bg-ivory/90 text-olive-gray hover:border-terracotta/25'
+            : 'border-border-cream bg-white/95 text-olive-gray hover:border-terracotta/25'
         }`}
       >
         <Cpu size={14} />
@@ -34,7 +39,11 @@ export default function RuntimeDropdown({ runtime }: { runtime: RuntimeState }) 
       </button>
 
       {open && (
-        <div className="absolute right-0 z-50 mt-2 w-[360px] max-w-[calc(100vw-2rem)] rounded-2xl border border-border-cream bg-white/95 p-3 text-left shadow-xl backdrop-blur-md">
+        <div
+          className={`absolute right-0 z-[1001] w-[min(360px,calc(100vw-2rem))] rounded-2xl border border-border-cream bg-white/95 p-3 text-left shadow-2xl backdrop-blur-md ${
+            floating ? 'bottom-full mb-2' : 'mt-2'
+          }`}
+        >
           <div className="flex items-start justify-between gap-3 border-b border-border-cream pb-3">
             <div>
               <p className="text-overline">{t('runtime.center')}</p>
@@ -51,14 +60,15 @@ export default function RuntimeDropdown({ runtime }: { runtime: RuntimeState }) 
           <div className="mt-3 max-h-[420px] space-y-2 overflow-y-auto pr-1">
             {runtime.connectors.map((connector) => {
               const selected = runtime.selectedRuntimeId === connector.id;
+              const connecting = runtime.connectingRuntimeId === connector.id;
               return (
                 <button
                   key={connector.id}
                   type="button"
-                  disabled={!connector.available}
-                  onClick={() => {
-                    runtime.selectRuntime(connector.id);
-                    setOpen(false);
+                  disabled={!connector.available || Boolean(runtime.connectingRuntimeId)}
+                  onClick={async () => {
+                    const connected = await runtime.selectRuntime(connector.id);
+                    if (connected) setOpen(false);
                   }}
                   className={`w-full rounded-xl border px-3 py-2.5 text-left transition ${
                     selected
@@ -80,8 +90,8 @@ export default function RuntimeDropdown({ runtime }: { runtime: RuntimeState }) 
                           ? 'bg-sage-green/15 text-sage-green'
                           : 'bg-warm-sand text-stone-gray'
                     }`}>
-                      {selected && <Check size={11} />}
-                      {selected ? t('runtime.connected') : connector.available ? t('runtime.availableShort') : t('runtime.unavailableShort')}
+                      {connecting ? <Loader2 size={11} className="animate-spin" /> : selected && <Check size={11} />}
+                      {connecting ? 'Connecting' : selected ? t('runtime.connected') : connector.available ? t('runtime.availableShort') : t('runtime.unavailableShort')}
                     </span>
                   </div>
                   <p className="mt-2 text-xs leading-5 text-olive-gray">{connector.message}</p>
@@ -94,4 +104,3 @@ export default function RuntimeDropdown({ runtime }: { runtime: RuntimeState }) 
     </div>
   );
 }
-

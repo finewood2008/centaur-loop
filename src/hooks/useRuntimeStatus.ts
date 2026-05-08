@@ -1,5 +1,11 @@
 import { useEffect, useState } from 'react';
-import { fetchRuntimeStatus, scanRuntimeConnectors, type RuntimeConnector, type RuntimeStatus } from '../adapters/runtime';
+import {
+  connectRuntime,
+  fetchRuntimeStatus,
+  scanRuntimeConnectors,
+  type RuntimeConnector,
+  type RuntimeStatus,
+} from '../adapters/runtime';
 
 const INITIAL_STATUS: RuntimeStatus = {
   mode: 'demo',
@@ -15,7 +21,8 @@ const STORAGE_KEY = 'centaur_loop_runtime_id';
 export interface RuntimeState extends RuntimeStatus {
   connectors: RuntimeConnector[];
   selectedRuntimeId: string;
-  selectRuntime: (runtimeId: string) => void;
+  connectingRuntimeId: string | null;
+  selectRuntime: (runtimeId: string) => Promise<boolean>;
   rescan: () => Promise<void>;
 }
 
@@ -36,18 +43,22 @@ function readStoredRuntimeId(): string | null {
   return window.localStorage.getItem(STORAGE_KEY);
 }
 
+function chooseSelectedConnector(scanConnectors: RuntimeConnector[]): RuntimeConnector {
+  const stored = readStoredRuntimeId();
+  return scanConnectors.find((connector) => connector.id === stored && connector.available)
+    ?? scanConnectors.find((connector) => connector.available)
+    ?? scanConnectors[0];
+}
+
 export function useRuntimeStatus(): RuntimeState {
   const [status, setStatus] = useState<RuntimeStatus>(INITIAL_STATUS);
   const [connectors, setConnectors] = useState<RuntimeConnector[]>([]);
   const [selectedRuntimeId, setSelectedRuntimeId] = useState<string>('local-demo');
+  const [connectingRuntimeId, setConnectingRuntimeId] = useState<string | null>(null);
 
   const applyScan = async () => {
     const scan = await scanRuntimeConnectors();
-    const stored = readStoredRuntimeId();
-    const selectedId = stored && scan.connectors.some((connector) => connector.id === stored)
-      ? stored
-      : scan.selectedRuntimeId;
-    const selected = scan.connectors.find((connector) => connector.id === selectedId) ?? scan.connectors[0];
+    const selected = chooseSelectedConnector(scan.connectors);
 
     setConnectors(scan.connectors);
     setSelectedRuntimeId(selected.id);
@@ -59,11 +70,7 @@ export function useRuntimeStatus(): RuntimeState {
     let cancelled = false;
     scanRuntimeConnectors().then((scan) => {
       if (cancelled) return;
-      const stored = readStoredRuntimeId();
-      const selectedId = stored && scan.connectors.some((connector) => connector.id === stored)
-        ? stored
-        : scan.selectedRuntimeId;
-      const selected = scan.connectors.find((connector) => connector.id === selectedId) ?? scan.connectors[0];
+      const selected = chooseSelectedConnector(scan.connectors);
       setConnectors(scan.connectors);
       setSelectedRuntimeId(selected.id);
       window.localStorage.setItem(STORAGE_KEY, selected.id);
@@ -102,18 +109,38 @@ export function useRuntimeStatus(): RuntimeState {
     };
   }, []);
 
-  const selectRuntime = (runtimeId: string) => {
+  const selectRuntime = async (runtimeId: string): Promise<boolean> => {
     const selected = connectors.find((connector) => connector.id === runtimeId);
-    if (!selected) return;
-    window.localStorage.setItem(STORAGE_KEY, runtimeId);
-    setSelectedRuntimeId(runtimeId);
-    setStatus(toStatus(selected));
+    if (!selected || !selected.available) return false;
+
+    setConnectingRuntimeId(runtimeId);
+    try {
+      const result = await connectRuntime(runtimeId);
+      setConnectors((current) => current.map((connector) =>
+        connector.id === runtimeId ? result.connector : connector,
+      ));
+      window.localStorage.setItem(STORAGE_KEY, runtimeId);
+      setSelectedRuntimeId(runtimeId);
+      setStatus(result.status);
+      return true;
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Runtime connection failed.';
+      setStatus((current) => ({
+        ...current,
+        available: false,
+        message,
+      }));
+      return false;
+    } finally {
+      setConnectingRuntimeId(null);
+    }
   };
 
   return {
     ...status,
     connectors,
     selectedRuntimeId,
+    connectingRuntimeId,
     selectRuntime,
     rescan: applyScan,
   };

@@ -69,18 +69,6 @@ export const TOOL_CATALOG: AIToolDefinition[] = [
     outputInstruction: '输出一篇2000字以上的SEO优化文章。',
   },
   {
-    id: 'short-video-script-generator',
-    name: '短视频脚本',
-    description: '生成短视频拍摄脚本',
-    icon: '🎬',
-    inputSchema: [
-      { id: 'topic', label: '选题', type: 'text', required: true },
-      { id: 'style', label: '风格', type: 'text', placeholder: '教程/vlog/剧情' },
-      { id: 'duration', label: '时长', type: 'text', placeholder: '30秒/60秒' },
-    ],
-    outputInstruction: '输出分镜脚本，包含画面、台词、时长。',
-  },
-  {
     id: 'geo-content-optimizer',
     name: 'GEO 内容优化',
     description: '优化内容以在AI回答中获得更好的引用',

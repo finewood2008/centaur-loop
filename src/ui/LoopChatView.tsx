@@ -62,7 +62,7 @@ function MiniProgress({ configId }: { configId: string }) {
 
 export default function LoopChatView() {
   const isXl = useMediaQuery('(min-width: 1280px)');
-  const [activeConfigId, setActiveConfigId] = useState(ALL_LOOP_CONFIGS[0]?.id ?? '');
+  const activeConfigId = ALL_LOOP_CONFIGS[0]?.id ?? '';
   const [session, setSession] = useState<LoopChatSession | null>(null);
   const [inputText, setInputText] = useState('');
   const [sending, setSending] = useState(false);
@@ -153,16 +153,9 @@ export default function LoopChatView() {
         {/* 顶栏 */}
         <div className="flex items-center justify-between border-b border-border-cream bg-white/60 px-4 py-3 rounded-t-2xl">
           <div className="flex items-center gap-3">
-            {ALL_LOOP_CONFIGS.map((c) => (
-              <button key={c.id} type="button" onClick={() => setActiveConfigId(c.id)}
-                className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs transition ${
-                  activeConfigId === c.id
-                    ? 'bg-terracotta/10 text-terracotta font-medium'
-                    : 'text-olive-gray hover:bg-warm-sand/50'
-                }`}>
-                <span>{c.icon}</span> {c.name}
-              </button>
-            ))}
+            <span className="flex items-center gap-1.5 rounded-lg bg-terracotta/10 px-3 py-1.5 text-xs font-medium text-terracotta">
+              <span>{config.icon}</span> {config.name}
+            </span>
           </div>
           <button type="button" onClick={handleReset} className="btn-ghost text-xs" title="重置对话">
             <RotateCcw size={13} />
@@ -192,7 +185,7 @@ export default function LoopChatView() {
               onKeyDown={handleKeyDown}
               placeholder={
                 session?.status === 'idle'
-                  ? `说出${config.cyclePeriod === 'daily' ? '今天' : '这周'}的目标…`
+                  ? '说出这周的内容增长目标…'
                   : '回复确认，或者说出你的想法…'
               }
               rows={1}
