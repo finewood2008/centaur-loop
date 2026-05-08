@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { ArrowUp, CheckCircle2, Cpu, RefreshCw, RotateCcw, Search } from 'lucide-react';
+import { ArrowUp, CheckCircle2, RefreshCw, RotateCcw } from 'lucide-react';
 import { ALL_LOOP_CONFIGS } from '../core/loopConfigs';
 import { useLoopStore } from '../core/loopStore';
 import type { LoopStage } from '../core/types';
@@ -25,64 +25,6 @@ const STAGE_ORDER: LoopStage[] = [
   'awaiting_memory',
   'cycle_complete',
 ];
-
-function RuntimeCenter({ runtime }: { runtime: RuntimeState }) {
-  const { t } = useI18n();
-
-  return (
-    <section className="card-glass p-4">
-      <div className="flex items-center justify-between gap-3">
-        <div>
-          <p className="text-overline">{t('runtime.center')}</p>
-          <h2 className="mt-1 flex items-center gap-2 text-sm font-semibold text-near-black">
-            <Cpu size={15} className={runtime.mode === 'real' ? 'text-sage-green' : 'text-amber-warm'} />
-            {runtime.mode === 'real' ? t('runtime.real') : t('runtime.demo')}
-          </h2>
-        </div>
-        <button type="button" onClick={() => void runtime.rescan()} className="btn-ghost text-xs">
-          <Search size={13} /> {t('runtime.scan')}
-        </button>
-      </div>
-
-      <p className="mt-2 text-xs leading-5 text-olive-gray">{t('runtime.configureHint')}</p>
-
-      <div className="mt-3 space-y-2">
-        {runtime.connectors.map((connector) => {
-          const selected = runtime.selectedRuntimeId === connector.id;
-          const enabled = connector.available;
-          return (
-            <button
-              key={connector.id}
-              type="button"
-              disabled={!enabled}
-              onClick={() => runtime.selectRuntime(connector.id)}
-              className={`w-full rounded-xl border px-3 py-3 text-left transition ${
-                selected
-                  ? 'border-terracotta/35 bg-terracotta/10'
-                  : enabled
-                    ? 'border-border-cream bg-ivory/80 hover:border-terracotta/25'
-                    : 'border-border-cream bg-warm-sand/25 opacity-70'
-              }`}
-            >
-              <div className="flex items-start justify-between gap-3">
-                <div className="min-w-0">
-                  <p className="text-sm font-medium text-near-black">{connector.label}</p>
-                  <p className="mt-0.5 truncate text-xs text-stone-gray">{connector.model}</p>
-                </div>
-                <span className={`shrink-0 rounded-full px-2 py-0.5 text-[11px] ${
-                  enabled ? 'bg-sage-green/15 text-sage-green' : 'bg-warm-sand text-stone-gray'
-                }`}>
-                  {selected ? t('runtime.connected') : enabled ? t('runtime.availableShort') : t('runtime.unavailableShort')}
-                </span>
-              </div>
-              <p className="mt-2 text-xs leading-5 text-olive-gray">{connector.message}</p>
-            </button>
-          );
-        })}
-      </div>
-    </section>
-  );
-}
 
 function CycleMap({ configId }: { configId: string }) {
   const { t } = useI18n();
@@ -221,7 +163,7 @@ export default function LoopConversationWorkbench({ runtime }: LoopConversationW
   if (!config) return null;
 
   return (
-    <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_380px]">
+    <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_300px]">
       <main className="min-w-0 rounded-2xl border border-border-cream bg-white/65 backdrop-blur-sm">
         <div className="flex flex-col gap-3 border-b border-border-cream px-4 py-3 lg:flex-row lg:items-center lg:justify-between">
           <div>
@@ -295,11 +237,9 @@ export default function LoopConversationWorkbench({ runtime }: LoopConversationW
       </main>
 
       <aside className="space-y-4">
-        <RuntimeCenter runtime={runtime} />
         <CycleMap configId={activeConfigId} />
         <MemoryShelf employeeId={config.employeeId} />
       </aside>
     </div>
   );
 }
-

@@ -4,7 +4,8 @@ import { ALL_LOOP_CONFIGS } from './core/loopConfigs';
 import LoopConversationWorkbench from './ui/LoopConversationWorkbench';
 import { I18nProvider, useI18n } from './i18n';
 import { useRuntimeStatus } from './hooks/useRuntimeStatus';
-import { Activity, BookOpen, Github, Languages, SlidersHorizontal } from 'lucide-react';
+import { BookOpen, Github, Languages, SlidersHorizontal } from 'lucide-react';
+import RuntimeDropdown from './ui/RuntimeDropdown';
 
 function AppShell() {
   const { t, toggleLocale } = useI18n();
@@ -31,15 +32,7 @@ function AppShell() {
           </div>
 
           <div className="flex flex-wrap items-center gap-2">
-            <div className={`inline-flex items-center gap-2 rounded-xl border px-3 py-2 text-xs ${
-              runtime.mode === 'real'
-                ? 'border-sage-green/30 bg-sage-green/10 text-sage-green'
-                : 'border-amber-warm/30 bg-amber-warm/10 text-amber-warm'
-            }`}>
-              <Activity size={14} />
-              <span>{runtime.mode === 'real' ? t('runtime.real') : t('runtime.demo')}</span>
-              <span className="text-stone-gray">{runtime.model}</span>
-            </div>
+            <RuntimeDropdown runtime={runtime} />
             <a href="https://github.com/finewood2008/centaur-loop" target="_blank" rel="noreferrer" className="btn-ghost">
               <Github size={15} /> {t('app.github')}
             </a>
