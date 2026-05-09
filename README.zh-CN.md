@@ -12,7 +12,7 @@
 
 Centaur Loop 帮助团队把 AI Agent 运行在可治理的业务循环里：Agent 可以规划和执行，但人类在关键节点保留判断权；真实世界反馈会被复盘，并在人工确认后成为下一轮可用的记忆。
 
-半人马环是由中国开发者发起的 AI Agent 基础设施项目，核心关注 AI Agent 反馈闭环、人机协作 Agent、Agent 记忆、AI 工作流治理和 LLMOps。它希望让 Agent 不只是被定时唤醒或按 workflow 执行，而是在真实反馈回来之后持续进化。
+半人马环关注 AI Agent 反馈闭环、人机协作 Agent、Agent 记忆、AI 工作流治理和 LLMOps。它希望让 Agent 不只是被定时唤醒或按 workflow 执行，而是在真实反馈回来之后持续进化。
 
 ```text
 规划 -> 确认 -> 执行 -> 审核 -> 发布 -> 反馈 -> 复盘 -> 记忆 -> 下一轮
@@ -30,7 +30,7 @@ Centaur Loop 帮助团队把 AI Agent 运行在可治理的业务循环里：Age
 
 Centaur Loop / 半人马环不是一个普通的 AI chat agent，也不是又一个 workflow builder。它是一个用于设计、驾驶和观察 AI Agent 反馈闭环的开源工作台：现有 runtime 负责任务执行，Centaur Loop 负责治理执行之后发生的事情，包括人工卡点、反馈采集、复盘、记忆确认和下一轮改进。
 
-中文检索词：AI Agent 反馈闭环、AI Agent 工作台、人机协作 Agent、Agent 记忆、AI 工作流治理、AI Agent 基础设施、LLMOps、中国 AI 开源项目。
+相关术语：AI Agent 反馈闭环、AI Agent 工作台、人机协作 Agent、Agent 记忆、AI 工作流治理、AI Agent 基础设施、LLMOps。
 
 ## 为什么投资人 / AI 创业者应该关注
 

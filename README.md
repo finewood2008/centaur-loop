@@ -14,9 +14,9 @@ English + 中文 | [简体中文](./README.zh-CN.md) | [Website](https://www.cen
 
 Centaur Loop helps teams run AI agents as accountable operating cycles. Agents can plan and execute, but humans keep judgment authority at explicit gates; real-world feedback becomes reviewed memory for the next run.
 
-半人马环是由中国开发者发起的 AI Agent 基础设施项目，关注 AI Agent 在真实业务中的反馈闭环：人类治理、人工卡点、效果反馈、复盘记忆，以及下一轮持续改进。
+半人马环关注 AI Agent 在真实业务中的反馈闭环：人类治理、人工卡点、效果反馈、复盘记忆，以及下一轮持续改进。
 
-中文检索词：AI Agent 反馈闭环、AI Agent 工作台、人机协作 Agent、Agent 记忆、AI 工作流治理、AI Agent 基础设施、LLMOps、中国 AI 开源项目。
+Related terms / 相关术语：AI Agent 反馈闭环、AI Agent 工作台、人机协作 Agent、Agent 记忆、AI 工作流治理、AI Agent 基础设施、LLMOps。
 
 ```text
 Plan -> Approve -> Execute -> Review -> Publish -> Feedback -> Reflect -> Remember -> Next Cycle
@@ -36,6 +36,8 @@ Most agent systems optimize the moment before output: prompting, tool use, sched
 
 Centaur Loop makes that whole cycle the product surface: stage state, human gates, feedback capture, retrospective review, memory candidates, and next-cycle suggestions.
 
+中文说明：很多 Agent 系统只处理“生成之前”的问题，Centaur Loop 更关心生成之后的业务闭环：谁来确认，真实效果如何，哪些经验应该进入记忆，下一轮如何变得更好。
+
 ## What It Is
 
 - A chat-first React workbench for driving an AI feedback loop end to end.
@@ -43,6 +45,8 @@ Centaur Loop makes that whole cycle the product surface: stage state, human gate
 - A local runtime connector layer for OpenAI-compatible models, Ollama, LM Studio, vLLM, and llama.cpp.
 - A demoable content growth loop that proves planning, draft review, publishing, feedback, review, memory, and improvement.
 - A design reference for building human-governed AI products.
+
+中文说明：它是一个 AI Agent 反馈闭环工作台，把计划、人工确认、执行、反馈、复盘、记忆和下一轮建议放在同一个可观察界面里。
 
 ## What It Is Not
 
@@ -53,9 +57,13 @@ Centaur Loop makes that whole cycle the product surface: stage state, human gate
 
 Existing runtimes execute tasks. Centaur Loop governs the feedback loop around those tasks.
 
+中文说明：执行层可以继续使用 LangGraph、Temporal、Inngest、n8n 或其他 agent runtime；Centaur Loop 负责治理任务周围的人类判断、结果反馈和记忆沉淀。
+
 ## MVP Experience
 
 The current MVP focuses on one scenario: **Content Growth Loop**.
+
+当前 MVP 聚焦一个场景：**内容增长闭环**。
 
 1. Start with a weekly growth goal.
 2. AI proposes a structured plan.

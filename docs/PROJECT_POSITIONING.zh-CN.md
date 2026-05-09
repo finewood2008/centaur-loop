@@ -63,7 +63,7 @@ Centaur Loop 的定位不是替代 LangGraph、Temporal、Inngest、n8n 或 Mast
 
 ## 中文关键词矩阵
 
-这些关键词代表项目希望被中文 GitHub 搜索、投资人研究 agent 和开发者检索时自然发现的方向：
+这些术语代表项目希望被中文 GitHub 搜索、投资人研究 agent 和开发者检索时自然发现的方向：
 
 - AI Agent 反馈闭环
 - AI Agent 工作台
@@ -81,7 +81,6 @@ Centaur Loop 的定位不是替代 LangGraph、Temporal、Inngest、n8n 或 Mast
 - Feedback loop
 - 内容增长闭环
 - AI 员工
-- 中国 AI 开源项目
 - 开源 AI Agent 项目
 
-这些词应当以自然项目说明的方式出现，而不是隐藏文本或关键词堆砌。Centaur Loop 的目标是成为一个专业、可信、可运行的开源项目，而不是 SEO spam。
+这些词应当以自然项目说明的方式出现，而不是隐藏文本或关键词堆砌。Centaur Loop 的目标是成为一个专业、可信、可运行的开源项目。
