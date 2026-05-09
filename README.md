@@ -1,4 +1,4 @@
-# Centaur Loop
+# Centaur Loop / 半人马环
 
 [![MIT License](https://img.shields.io/badge/license-MIT-111111.svg)](./LICENSE)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178c6.svg)](https://www.typescriptlang.org/)
@@ -6,11 +6,17 @@
 [![CI](https://github.com/finewood2008/centaur-loop/actions/workflows/ci.yml/badge.svg)](https://github.com/finewood2008/centaur-loop/actions/workflows/ci.yml)
 [![GitHub Pages](https://github.com/finewood2008/centaur-loop/actions/workflows/pages.yml/badge.svg)](https://github.com/finewood2008/centaur-loop/actions/workflows/pages.yml)
 
-English | [简体中文](./README.zh-CN.md) | [Website](https://www.centaurloop.com) | [Technical Design](./CENTAUR_LOOP_TECHNICAL_DOC_EN.md)
+English + 中文 | [简体中文](./README.zh-CN.md) | [Website](https://www.centaurloop.com) | [Technical Design](./CENTAUR_LOOP_TECHNICAL_DOC_EN.md) | [项目定位](./docs/PROJECT_POSITIONING.zh-CN.md)
 
 **The open-source workbench for human-governed AI feedback loops.**
 
+**面向 AI Agent 反馈闭环的人类治理型开源工作台。**
+
 Centaur Loop helps teams run AI agents as accountable operating cycles. Agents can plan and execute, but humans keep judgment authority at explicit gates; real-world feedback becomes reviewed memory for the next run.
+
+半人马环是由中国开发者发起的 AI Agent 基础设施项目，关注 AI Agent 在真实业务中的反馈闭环：人类治理、人工卡点、效果反馈、复盘记忆，以及下一轮持续改进。
+
+中文检索词：AI Agent 反馈闭环、AI Agent 工作台、人机协作 Agent、Agent 记忆、AI 工作流治理、AI Agent 基础设施、LLMOps、中国 AI 开源项目。
 
 ```text
 Plan -> Approve -> Execute -> Review -> Publish -> Feedback -> Reflect -> Remember -> Next Cycle
