@@ -107,6 +107,8 @@ export interface UserAction {
     feedback?: {                        // submit_feedback
       views?: number;
       likes?: number;
+      favorites?: number;
+      comments?: number;
       rating?: 'good' | 'ok' | 'bad';
       note?: string;
     };

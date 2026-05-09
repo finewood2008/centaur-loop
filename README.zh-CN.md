@@ -18,6 +18,12 @@ Centaur Loop 帮助团队把 AI Agent 运行在可治理的业务循环里：Age
 
 > Cron 让 Agent 醒来。Workflow 让 Agent 按步骤执行。Centaur Loop 让 Agent 在真实反馈回来之后持续进化。
 
+## Demo
+
+![Centaur Loop 内容增长闭环演示](./docs/assets/centaur-loop-demo.gif)
+
+这个 demo 展示了当前 MVP 的完整内容增长闭环：AI 规划、人工卡点、草稿审核、手动标记发布、样例反馈、复盘、记忆确认，以及完成后可用于下一轮的已确认记忆。
+
 ## 为什么需要它
 
 很多 Agent 系统优化的是输出之前的部分：提示词、工具调用、调度、编排。但真正难的产品问题通常发生在输出离开聊天窗口之后：是否被审核？是否被发布？效果如何？下一轮应该记住什么？

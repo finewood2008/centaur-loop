@@ -18,6 +18,12 @@ Plan -> Approve -> Execute -> Review -> Publish -> Feedback -> Reflect -> Rememb
 
 > Cron wakes agents up. Workflows move agents through steps. Centaur Loop helps agents improve after feedback comes back.
 
+## Demo
+
+![Centaur Loop content growth loop demo](./docs/assets/centaur-loop-demo.gif)
+
+This demo shows the current MVP running a full content growth loop: AI planning, human gates, draft review, manual publish marking, sample feedback, retrospective review, memory confirmation, and a completed cycle with confirmed memory ready for the next run.
+
 ## Why It Matters
 
 Most agent systems optimize the moment before output: prompting, tool use, scheduling, orchestration. The hard product problem often starts after output leaves the chat window: Was it approved? Was it published? Did it work? What should the agent remember next time?

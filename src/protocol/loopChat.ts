@@ -194,6 +194,26 @@ function buildFeedbackRequest(cycle: LoopCycle, config: CentaurLoopConfig, local
 
   return [aiMsg(text, 'feedback_request', {
     actions: [
+      {
+        id: 'sample-feedback',
+        label: locale === 'zh-CN' ? '使用样例反馈' : 'Use sample feedback',
+        variant: 'primary',
+        action: {
+          type: 'submit_feedback',
+          payload: {
+            feedback: {
+              views: 8400,
+              likes: 310,
+              favorites: 180,
+              comments: 42,
+              rating: 'good',
+              note: locale === 'zh-CN'
+                ? '开发者喜欢把 Centaur Loop 和 cron、workflow、chat agent 直接对比，但想更清楚看到记忆如何影响下一轮。'
+                : 'Developers liked the direct comparison with cron, workflow engines, and chat agents, but wanted to see how memory affects the next cycle.',
+            },
+          },
+        },
+      },
       { id: 'skip-feedback', label: locale === 'zh-CN' ? '跳过，直接复盘' : 'Skip and review', variant: 'ghost', action: { type: 'skip' } },
     ],
     cycleId: cycle.id,
@@ -405,6 +425,14 @@ export class LoopChatController {
           return;
         }
 
+        if (cycle.stage === 'awaiting_memory') {
+          for (const candidate of cycle.memoryCandidates) {
+            if (candidate.status === 'pending') {
+              store.confirmMemory(cycle.id, candidate.id);
+            }
+          }
+        }
+
         // 通用确认（计划/记忆等）
         const waitingCp = cycle.checkpoints.find((cp) => cp.status === 'waiting');
         if (waitingCp) store.resolveCheckpoint(cycle.id, waitingCp.id);
@@ -469,6 +497,8 @@ export class LoopChatController {
               published: true,
               views: fb.views,
               likes: fb.likes,
+              favorites: fb.favorites,
+              comments: fb.comments,
               rating: fb.rating,
               ownerNote: fb.note,
             });

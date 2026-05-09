@@ -217,6 +217,19 @@
       box-shadow: 18px 18px 0 rgba(36, 49, 42, 0.08);
       overflow: hidden;
     }
+    .hero-demo {
+      min-height: 0;
+      padding: 10px;
+      background: var(--surface);
+    }
+    .hero-demo img {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      object-fit: cover;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--bg);
+    }
     .terminal {
       position: relative;
       height: 100%;
@@ -384,36 +397,8 @@
           </ul>
         </div>
 
-        <div class="hero-visual" role="img" aria-label="Centaur Loop product interface illustration">
-          <div class="terminal">
-            <div class="terminal-head">
-              <span>cycle://content-growth/weekly</span>
-              <span class="dots" aria-hidden="true"><span class="dot"></span><span class="dot"></span><span class="dot"></span></span>
-            </div>
-            <div class="terminal-body">
-              <div class="loop-line">
-                <span class="stage">Planning</span>
-                <div><strong>AI proposes the cycle plan</strong><p>Goal, memories, tool registry, business context, and previous suggestions become structured tasks.</p></div>
-              </div>
-              <div class="loop-line">
-                <span class="stage active">Human Gate</span>
-                <div><strong>Owner approves what needs judgment</strong><p>Plans, drafts, publishing, feedback, and memory candidates become first-class checkpoints.</p></div>
-              </div>
-              <div class="loop-line">
-                <span class="stage">Execution</span>
-                <div><strong>Agent work continues automatically</strong><p>Drafts are generated through adapter-ready tools without losing the loop state.</p></div>
-              </div>
-              <div class="loop-line">
-                <span class="stage">Review</span>
-                <div><strong>Outcomes become memory</strong><p>Feedback is reviewed into lessons, corrections, preferences, and next-cycle suggestions.</p></div>
-              </div>
-              <div class="command">
-                npm install<br>
-                npm run dev<br>
-                <span class="terminal-comment"># demo runtime works without API keys</span>
-              </div>
-            </div>
-          </div>
+        <div class="hero-visual hero-demo" role="img" aria-label="Centaur Loop content growth loop demo">
+          <img src="./assets/centaur-loop-demo.gif" alt="Centaur Loop content growth loop demo showing planning, human gates, feedback review, and confirmed memory">
         </div>
       </div>
     </section>
