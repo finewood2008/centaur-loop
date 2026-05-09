@@ -2,9 +2,20 @@
 
 Centaur Loop / 半人马环是一个面向 AI Agent 反馈闭环的人类治理型开源工作台。它帮助团队把 Agent 工作从“一次性生成”升级为可持续改进的业务循环：目标、计划、人工确认、执行、发布、反馈、复盘、记忆确认和下一轮优化。
 
+当前仓库是 Centaur Loop Studio 的开源核心。它不是完整 SaaS，但已经展示了完整产品路径：创建闭环、选择 runtime、确认计划、审核产出、收集反馈、确认记忆，并带着历史经验进入下一轮。
+
 ## 一句话定位
 
 半人马环是 AI Agent 时代的反馈闭环工作台：让 Agent 在真实反馈回来之后，经过人类治理和记忆复盘，持续改进下一轮工作。
+
+## 产品层级
+
+| 层级 | 状态 | 作用 |
+| --- | --- | --- |
+| Centaur Loop Studio | 产品方向 | 用于设计、驾驶和观察 AI 反馈闭环的完整工作台。 |
+| Open-source Workbench | 当前仓库 | 本地可运行应用、loop 状态机、runtime connector、人工卡点、反馈和记忆流程。 |
+| Content Growth Loop | 旗舰 demo | 第一个端到端场景，证明规划、审核、发布、反馈、复盘记忆和下一轮改进。 |
+| Centaur Loop Cloud | Roadmap | 托管 runtime 管理、团队空间、loop analytics、持久化记忆和企业治理能力。 |
 
 ## 目标用户
 
