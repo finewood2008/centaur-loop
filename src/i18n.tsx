@@ -34,6 +34,10 @@ const dictionaries = {
     'memory.notUsed': 'No prior memory has been used yet.',
     'loop.contentGrowth': 'Content Growth Loop',
     'loop.contentGrowth.description': 'Grow search and AI-answer visibility through planned content, feedback, review, and memory.',
+    'loop.customerSupport': 'Customer Support Loop',
+    'loop.customerSupport.description': 'Improve support quality through AI-assisted replies, human review, satisfaction feedback, and experience memory.',
+    'loop.productIteration': 'Product Iteration Loop',
+    'loop.productIteration.description': 'Extract requirements from user feedback, generate iteration plans, track launch outcomes, and build product memory.',
     'stage.planning': 'Planning',
     'stage.awaiting_plan_review': 'Plan review',
     'stage.generating': 'Generating',
@@ -179,6 +183,10 @@ const dictionaries = {
     'memory.notUsed': '本轮还未使用历史记忆。',
     'loop.contentGrowth': '内容增长闭环',
     'loop.contentGrowth.description': '通过计划、内容、反馈、复盘和记忆持续提升搜索与 AI 回答可见度。',
+    'loop.customerSupport': '客服质量闭环',
+    'loop.customerSupport.description': '通过 AI 辅助回复、人工审核、满意度反馈和经验沉淀，持续提升客服质量。',
+    'loop.productIteration': '产品迭代闭环',
+    'loop.productIteration.description': '从用户反馈中提取需求、生成迭代方案、跟踪上线效果，形成产品改进闭环。',
     'stage.planning': '规划',
     'stage.awaiting_plan_review': '确认计划',
     'stage.generating': '生成',
@@ -341,14 +349,20 @@ export function useI18n(): I18nContextValue {
   return ctx;
 }
 
+const LOOP_CONFIG_I18N_MAP: Record<string, string> = {
+  'seo-geo-growth': 'contentGrowth',
+  'customer-support': 'customerSupport',
+  'product-iteration': 'productIteration',
+};
+
 export function getLoopConfigLabel(configId: string, locale: Locale): string {
-  void configId;
-  return dictionaries[locale]['loop.contentGrowth'];
+  const key = LOOP_CONFIG_I18N_MAP[configId] ?? 'contentGrowth';
+  return dictionaries[locale][`loop.${key}` as MessageKey] ?? configId;
 }
 
 export function getLoopConfigDescription(configId: string, locale: Locale): string {
-  void configId;
-  return dictionaries[locale]['loop.contentGrowth.description'];
+  const key = LOOP_CONFIG_I18N_MAP[configId] ?? 'contentGrowth';
+  return dictionaries[locale][`loop.${key}.description` as MessageKey] ?? '';
 }
 
 export function getOutputLanguageInstruction(locale: Locale): string {

@@ -81,9 +81,15 @@ Existing runtimes execute tasks. Centaur Loop governs the feedback loop around t
 
 ## MVP Experience
 
-The current MVP focuses on one scenario: **Content Growth Loop**.
+The current MVP includes three built-in loop templates:
 
-当前 MVP 聚焦一个场景：**内容增长闭环**。
+当前 MVP 包含三个内置闭环模板：
+
+| Loop | Cycle | Description |
+| --- | --- | --- |
+| **SEO/GEO Content Growth** | Weekly | Grow search and AI-answer visibility through planned content, feedback, review, and memory. |
+| **Customer Support Quality** | Daily | Improve support quality through AI-assisted replies, human review, satisfaction feedback, and experience memory. |
+| **Product Iteration** | Biweekly | Extract requirements from user feedback, generate iteration plans, track launch outcomes, and build product memory. |
 
 1. Start with a weekly growth goal.
 2. AI proposes a structured plan.
@@ -191,7 +197,7 @@ npm run build
 - **Adapter ecosystem**: add storage, notifier, model, memory, LangGraph, Mastra, Inngest, Temporal, and n8n-style adapters.
 - **Team workspace**: add persistent projects, shared loop history, team review, and organization memory.
 - **Centaur Loop Cloud**: hosted runtime management, durable execution, observability, loop analytics, and managed memory.
-- **Memory layer**: add richer semantic retrieval beyond the current local prototype.
+- **Memory layer**: semantic relevance scoring, tags, expiry, and access-frequency ranking beyond the current local prototype.
 
 ## Project Status
 

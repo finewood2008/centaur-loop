@@ -81,6 +81,85 @@ export const TOOL_CATALOG: AIToolDefinition[] = [
   },
 ];
 
+// ── 客服闭环工具 ──────────────────────────────────────────────────
+
+const SUPPORT_TOOLS: AIToolDefinition[] = [
+  {
+    id: 'ticket-classifier',
+    name: '工单分类',
+    description: '对客服工单进行分类和优先级排序',
+    icon: '🏷️',
+    inputSchema: [
+      { id: 'tickets', label: '工单内容', type: 'textarea', required: true },
+      { id: 'categories', label: '分类标签', type: 'text', placeholder: '技术问题/账号问题/功能建议' },
+    ],
+    outputInstruction: '输出 JSON，包含每条工单的分类、优先级和建议处理策略。',
+  },
+  {
+    id: 'support-reply-generator',
+    name: '客服回复生成',
+    description: '根据工单内容生成专业的客服回复',
+    icon: '💬',
+    inputSchema: [
+      { id: 'ticket', label: '客户问题', type: 'textarea', required: true },
+      { id: 'context', label: '背景信息', type: 'textarea' },
+      { id: 'tone', label: '语气', type: 'text', placeholder: '专业/亲切/简洁' },
+    ],
+    outputInstruction: '输出一条可直接发送的客服回复。',
+  },
+  {
+    id: 'faq-answer-writer',
+    name: 'FAQ 回答生成',
+    description: '根据常见问题生成标准化回答',
+    icon: '📋',
+    inputSchema: [
+      { id: 'question', label: '问题', type: 'text', required: true },
+      { id: 'product', label: '产品/功能', type: 'text' },
+    ],
+    outputInstruction: '输出一条清晰、准确的 FAQ 回答。',
+  },
+];
+
+// ── 产品迭代闭环工具 ──────────────────────────────────────────────
+
+const PRODUCT_TOOLS: AIToolDefinition[] = [
+  {
+    id: 'feedback-analyzer',
+    name: '反馈分析',
+    description: '从用户反馈中提取需求和痛点',
+    icon: '📊',
+    inputSchema: [
+      { id: 'feedback', label: '用户反馈', type: 'textarea', required: true },
+      { id: 'product', label: '产品名称', type: 'text' },
+    ],
+    outputInstruction: '输出 JSON，包含提取的需求列表、优先级和分类。',
+  },
+  {
+    id: 'iteration-plan-writer',
+    name: '迭代方案',
+    description: '根据需求分析生成产品迭代方案',
+    icon: '📐',
+    inputSchema: [
+      { id: 'requirements', label: '需求列表', type: 'textarea', required: true },
+      { id: 'constraints', label: '约束条件', type: 'textarea' },
+    ],
+    outputInstruction: '输出一份产品迭代方案，包含目标、范围、优先级和里程碑。',
+  },
+  {
+    id: 'changelog-generator',
+    name: 'Changelog 生成',
+    description: '根据迭代内容生成用户可读的更新日志',
+    icon: '📝',
+    inputSchema: [
+      { id: 'changes', label: '变更内容', type: 'textarea', required: true },
+      { id: 'audience', label: '目标读者', type: 'text', placeholder: '用户/开发者/内部' },
+    ],
+    outputInstruction: '输出一份结构清晰的 changelog。',
+  },
+];
+
+const ALL_TOOLS = [...TOOL_CATALOG, ...SUPPORT_TOOLS, ...PRODUCT_TOOLS];
+
 export function findTool(toolId: string): AIToolDefinition | undefined {
-  return TOOL_CATALOG.find((t) => t.id === toolId);
+  return ALL_TOOLS.find((t) => t.id === toolId);
 }
